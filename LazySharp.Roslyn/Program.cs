@@ -30,7 +30,7 @@ namespace LazySharp.Roslyn {
 @"using System;
     public class X {
         public Lazy<int> Add(Lazy<int> a, Lazy<int> b) {
-            return new Lazy<int>(() => a.Value + b.Value);
+            return a.Add(b);
         }
     }
 ";
@@ -61,6 +61,7 @@ namespace LazySharp.Roslyn {
                 var newType = Syntax.GenericName("Lazy").AddTypeArgumentListArguments(clearType).WithTrailingTrivia(trail);
                 return node.WithType(newType);
             }
+            //override Visit
         }
     }
 }
