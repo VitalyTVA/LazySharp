@@ -61,7 +61,11 @@ namespace LazySharp.Roslyn {
                 var newType = Syntax.GenericName("Lazy").AddTypeArgumentListArguments(clearType).WithTrailingTrivia(trail);
                 return node.WithType(newType);
             }
-            //override Visit
+            public override SyntaxNode VisitBinaryExpression(BinaryExpressionSyntax node) {
+                var syntaxSeparatedList = Syntax.SeparatedList(Syntax.Argument(node.Right));
+                var syntaxArgumentList = Syntax.ArgumentList(syntaxSeparatedList);
+                return Syntax.InvocationExpression(Syntax.MemberAccessExpression(SyntaxKind.MemberAccessExpression, node.Left, Syntax.IdentifierName("Add")), syntaxArgumentList);
+            }
         }
     }
 }
