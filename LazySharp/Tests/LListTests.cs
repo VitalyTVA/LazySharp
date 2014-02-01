@@ -7,7 +7,7 @@ namespace LazySharp.Tests {
     [TestFixture]
     public class LListTests {
         [Test]
-        public void LList_Null() {
+        public void Null() {
             var enumerable = ((LList<int>)null).AsLazy().AsEnumerable();
             Assert.Throws<ArgumentNullException>(() => enumerable.ToArray());
 
@@ -16,7 +16,7 @@ namespace LazySharp.Tests {
         }
 
         [Test]
-        public void LList_HeadOnly() {
+        public void HeadOnly() {
             int callCount = 0;
             Func<int> f1 = () => {
                 callCount++;
@@ -30,7 +30,7 @@ namespace LazySharp.Tests {
         }
 
         [Test]
-        public void LList_TwoElements() {
+        public void TwoElements() {
             int callCount1 = 0;
             Func<int> f1 = () => {
                 callCount1++;
@@ -74,6 +74,23 @@ namespace LazySharp.Tests {
             callCount2.IsEqual(1);
             listCallCount1.IsEqual(1);
             listCallCount2.IsEqual(1);
+        }
+
+        [Test]
+        public void Infinite() {
+            //foreach(int number in LList.Infinite(5.AsLazy()).AsEnumerable()) {
+                
+            //}
+        }
+        [Test]
+        public void Range() {
+            int expected = 3;
+            foreach(int number in LList.Range(expected.AsLazy(), 5.AsLazy()).AsEnumerable()) {
+                number.IsEqual(expected);
+                expected.IsTrue(x => x <= 3 + 5);
+                expected++;
+            }
+            expected.IsEqual(3 + 5);
         }
     }
 }

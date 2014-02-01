@@ -11,6 +11,15 @@ namespace LazySharp {
         public static L<T> MakeLazy<T>(this Func<T> func) {
             return new L<T>(func);
         }
+        public static L<int> Inc(this L<int> value) {
+            return new L<int>(() => value.Value() + 1);
+        }
+        public static L<int> Dec(this L<int> value) {
+            return new L<int>(() => value.Value() - 1);
+        }
+        //public static L<int> Dec(L<int> value) {
+        //    return new L<int>(() => value.Value() - 1);
+        //}
         public static IEnumerable<T> AsEnumerable<T>(this L<LList<T>> list) {
             list.NotNull();
             do {
