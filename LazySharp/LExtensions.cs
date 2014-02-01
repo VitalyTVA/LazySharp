@@ -9,11 +9,11 @@ namespace LazySharp {
         public static L<T> AsLazy<T>(this T value) {
             return new L<T>(value);
         }
-        public static L<T> ToLazy<T>(this Func<T> func) {
+        public static L<T> MakeLazy<T>(this Func<T> func) {
             return new L<T>(func);
         }
-        public static L<int> Add(this L<int> l1, L<int> l2) { 
-            return new L<int>(() => l1.Value + l2.Value);
-        }
+        //public static L<int> Add(this L<int> l1, L<int> l2) { 
+        //    return new L<int>(() => l1.Value() + l2.Value());
+        //}
     }
 }

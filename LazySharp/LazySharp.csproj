@@ -46,6 +46,7 @@
     <Compile Include="L.cs" />
     <Compile Include="LExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\FluentAssert.cs" />
     <Compile Include="Tests\LTests.cs" />
   </ItemGroup>
   <ItemGroup>
