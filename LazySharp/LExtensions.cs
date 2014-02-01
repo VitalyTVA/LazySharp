@@ -17,22 +17,13 @@ namespace LazySharp {
         public static L<int> Dec(this L<int> value) {
             return new L<int>(() => value.Value() - 1);
         }
-        //public static L<int> Dec(L<int> value) {
-        //    return new L<int>(() => value.Value() - 1);
-        //}
         public static IEnumerable<T> AsEnumerable<T>(this L<LList<T>> list) {
             list.NotNull();
-            //while(list != null && list.Value() != null) {
-            //    yield return list.Value().Head.Value();
-            //    list = list.Value().Tail;
-            //}
-            do {
-                var value = list.Value();
-                if(value == null)
-                    yield break;
-                yield return value.Head.Value();
-                list = value.Tail;
-            } while(list != null);
+            LList<T> listValue = null;
+            while((listValue = list.Value()) != null) {
+                yield return listValue.Head.Value();
+                list = listValue.Tail;
+            }
         }
         //public static L<int> Add(this L<int> l1, L<int> l2) { 
         //    return new L<int>(() => l1.Value() + l2.Value());

@@ -5,7 +5,7 @@ using LazySharp.Utils;
 
 namespace LazySharp {
     public class L<T> {
-        //public static readonly L<T> Default = new L<T>(default(T));
+        public static readonly L<T> Default = new L<T>(default(T));
         T value;
         Func<T> func;
 

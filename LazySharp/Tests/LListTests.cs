@@ -10,6 +10,8 @@ namespace LazySharp.Tests {
         public void Null() {
             var enumerable = ((L<LList<int>>)null).AsEnumerable();
             Assert.Throws<ArgumentNullException>(() => enumerable.ToArray());
+
+            Assert.Throws<ArgumentNullException>(() => new LList<int>(0.AsLazy(), null));
         }
         [Test]
         public void Empty() {
@@ -23,7 +25,7 @@ namespace LazySharp.Tests {
                 callCount++;
                 return 13;
             };
-            var list = new LList<int>(f1.MakeLazy()).AsLazy();
+            var list = new LList<int>(f1.MakeLazy(), LList<int>.Null).AsLazy();
             list.AsEnumerable().Single().IsEqual(13);
             callCount.IsEqual(1);
             list.AsEnumerable().Single().IsEqual(13);
@@ -46,7 +48,7 @@ namespace LazySharp.Tests {
             int listCallCount2 = 0;
             Func<LList<int>> fList2 = () => {
                 listCallCount2++;
-                return new LList<int>(f2.MakeLazy());
+                return new LList<int>(f2.MakeLazy(), LList<int>.Null);
             };
 
             int listCallCount1 = 0;
