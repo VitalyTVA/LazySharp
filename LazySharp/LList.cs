@@ -21,8 +21,9 @@ namespace LazySharp {
         }
         public static L<LList<int>> Range(L<int> start, L<int> count) {
             return new L<LList<int>>(() => {
-                var tail = count.Value() > 1 ? Range(start.Inc(), count.Dec()) : null;
-                return new LList<int>(start, tail);
+                return count.Value() > 0 ? 
+                    new LList<int>(start, Range(start.Inc(), count.Dec())) : 
+                    null;
             });
         }
     }

@@ -8,13 +8,14 @@ namespace LazySharp.Tests {
     public class LListTests {
         [Test]
         public void Null() {
-            var enumerable = ((LList<int>)null).AsLazy().AsEnumerable();
-            Assert.Throws<ArgumentNullException>(() => enumerable.ToArray());
-
-            enumerable = ((L<LList<int>>)null).AsEnumerable();
+            var enumerable = ((L<LList<int>>)null).AsEnumerable();
             Assert.Throws<ArgumentNullException>(() => enumerable.ToArray());
         }
-
+        [Test]
+        public void Empty() {
+            LList<int> empty = null;
+            empty.AsLazy().AsEnumerable().Any().IsFalse();
+        }
         [Test]
         public void HeadOnly() {
             int callCount = 0;
@@ -95,6 +96,9 @@ namespace LazySharp.Tests {
                 expected++;
             }
             expected.IsEqual(3 + 5);
+
+            LList.Range(5.AsLazy(), 1.AsLazy()).AsEnumerable().Single().IsEqual(5);
+            LList.Range(5.AsLazy(), 0.AsLazy()).AsEnumerable().Any().IsFalse();
         }
     }
 }

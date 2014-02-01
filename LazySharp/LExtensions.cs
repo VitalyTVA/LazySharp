@@ -22,8 +22,14 @@ namespace LazySharp {
         //}
         public static IEnumerable<T> AsEnumerable<T>(this L<LList<T>> list) {
             list.NotNull();
+            //while(list != null && list.Value() != null) {
+            //    yield return list.Value().Head.Value();
+            //    list = list.Value().Tail;
+            //}
             do {
-                var value = list.Value().NotNull();
+                var value = list.Value();
+                if(value == null)
+                    yield break;
                 yield return value.Head.Value();
                 list = value.Tail;
             } while(list != null);
