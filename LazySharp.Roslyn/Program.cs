@@ -58,7 +58,7 @@ namespace LazySharp.Roslyn {
             public override SyntaxNode VisitParameter(ParameterSyntax node) {
                 var trail = node.Type.GetTrailingTrivia().Single();
                 var clearType = node.Type.ReplaceTrivia(trail, SyntaxTriviaList.Empty);
-                var newType = Syntax.GenericName("Lazy").AddTypeArgumentListArguments(clearType).WithTrailingTrivia(trail);
+                var newType = Syntax.GenericName("L").AddTypeArgumentListArguments(clearType).WithTrailingTrivia(trail);
                 return node.WithType(newType);
             }
             public override SyntaxNode VisitBinaryExpression(BinaryExpressionSyntax node) {
