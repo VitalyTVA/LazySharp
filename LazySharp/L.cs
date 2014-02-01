@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LazySharp.Utils;
 
 namespace LazySharp {
     public struct L<T> {
@@ -24,7 +23,7 @@ namespace LazySharp {
         }
         public L(Func<T> func) {
             this.value = default(T);
-            this.func = func;
+            this.func = func.NotNull();
         }
     }
 }

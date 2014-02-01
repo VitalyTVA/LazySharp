@@ -48,14 +48,14 @@ namespace LazySharp.Tests {
             Assert.IsFalse(val);
             return val;
         }
-        public static TInput IsInstanceOfType<TInput>(this TInput obj, Type expectedType) where TInput : class {
-            Assert.IsInstanceOfType(expectedType, obj);
-            return obj;
-        }
-        public static TInput IsInstanceOfType<TInput>(this TInput obj, Func<TInput, object> valueEvaluator, Type expectedType) where TInput : class {
-            Assert.IsInstanceOfType(expectedType, valueEvaluator(obj));
-            return obj;
-        }
+        //public static TInput IsInstanceOfType<TInput>(this TInput obj, Type expectedType) where TInput : class {
+        //    Assert.IsInstanceOfType(expectedType, obj);
+        //    return obj;
+        //}
+        //public static TInput IsInstanceOfType<TInput>(this TInput obj, Func<TInput, object> valueEvaluator, Type expectedType) where TInput : class {
+        //    Assert.IsInstanceOfType(expectedType, valueEvaluator(obj));
+        //    return obj;
+        //}
         static object GetActualValue<TInput>(TInput obj, Func<TInput, object> valueEvaluator) {
             return valueEvaluator == null ? obj : valueEvaluator(obj);
         }
