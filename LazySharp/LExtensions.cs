@@ -17,6 +17,10 @@ namespace LazySharp {
         public static L<int> Dec(this L<int> value) {
             return new L<int>(() => value.Value() - 1);
         }
+        public static L<bool> GreaterThan(this L<int> left, L<int> right) {
+            return new L<bool>(() => left.Value() > right.Value());
+        }
+
         public static IEnumerable<T> AsEnumerable<T>(this L<LList<T>> list) {
             list.NotNull();
             LList<T> listValue = null;
