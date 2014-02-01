@@ -111,5 +111,13 @@ namespace LazySharp.Tests {
             Assert.Throws<ArgumentNullException>(() => LList.Range(null, L<int>.Default));
             Assert.Throws<ArgumentNullException>(() => LList.Range(L<int>.Default, null));
         }
+        [Test, Explicit]
+        public void Weird() {
+            var weird = GetWeird();
+            var x = weird.Value();
+        }
+        L<int> GetWeird() { 
+            return new L<int>(() => GetWeird().Value() + 1);
+        }
     }
 }
