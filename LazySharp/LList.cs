@@ -16,11 +16,14 @@ namespace LazySharp {
 
     public static class LList {
         public static L<LList<int>> Infinite(L<int> start) {
+            start.NotNull();
             return new L<LList<int>>(() => {
                 return new LList<int>(start, Infinite(start.Inc()));
             });
         }
         public static L<LList<int>> Range(L<int> start, L<int> count) {
+            start.NotNull();
+            count.NotNull();
             return new L<LList<int>>(() => {
                 return count.Value() > 0 ? 
                     new LList<int>(start, Range(start.Inc(), count.Dec())) : 

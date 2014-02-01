@@ -86,8 +86,10 @@ namespace LazySharp.Tests {
                 number.IsEqual(expected);
                 expected++;
                 if(expected > 10)
-                    return;
+                    break;
             }
+
+            Assert.Throws<ArgumentNullException>(() => LList.Infinite(null));
         }
         [Test]
         public void Range() {
@@ -101,6 +103,9 @@ namespace LazySharp.Tests {
 
             LList.Range(5.AsLazy(), 1.AsLazy()).AsEnumerable().Single().IsEqual(5);
             LList.Range(5.AsLazy(), 0.AsLazy()).AsEnumerable().Any().IsFalse();
+
+            Assert.Throws<ArgumentNullException>(() => LList.Range(null, L<int>.Default));
+            Assert.Throws<ArgumentNullException>(() => LList.Range(L<int>.Default, null));
         }
     }
 }
