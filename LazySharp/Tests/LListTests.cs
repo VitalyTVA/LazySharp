@@ -14,6 +14,10 @@ namespace LazySharp.Tests {
             Assert.Throws<ArgumentNullException>(() => new LList<int>(0.AsLazy(), null));
         }
         [Test]
+        public void SingleNull() {
+            new LList<object>(L<object>.Default, LList<object>.Null).AsLazy().AsEnumerable().Single().IsNull();
+        }
+        [Test]
         public void Empty() {
             LList<int> empty = null;
             empty.AsLazy().AsEnumerable().Any().IsFalse();
