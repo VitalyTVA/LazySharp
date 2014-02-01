@@ -7,12 +7,28 @@ namespace LazySharp.Tests {
     [TestFixture]
     public class LTests {
         [Test]
-        public void L_NullFunc() {
+        public void NullFunc() {
             Assert.Throws<ArgumentNullException>(() => ((Func<int>)null).MakeLazy());
         }
 
         [Test]
-        public void L() {
+        public void NoCopy() {
+            int callCount = 0;
+            Func<int> f = () => {
+                callCount++;
+                return 13;
+            };
+            var lazy = f.MakeLazy();
+            NoCopyCore(lazy);
+            lazy.Value();
+            callCount.IsEqual(1);
+        }
+        void NoCopyCore(L<int> lazy) {
+            lazy.Value();
+        }
+
+        [Test]
+        public void LazyEvaluationAndMemoization() {
             const int x = 9;
             x.AsLazy().HasValue.IsTrue();
             x.AsLazy().Value().IsEqual(9);
@@ -35,26 +51,6 @@ namespace LazySharp.Tests {
             lazy.HasValue.IsTrue();
             lazy.Value().IsEqual(13);
             callCount.IsEqual(1);
-        }
-
-        [Test]
-        public void LList_Null() {
-            LList<int> list = null;
-            list.AsEnumerable().Any().IsFalse();
-        }
-
-        [Test]
-        public void LList_HeadOnly() {
-            LList<int> list = null;
-            list.AsEnumerable().Any().IsFalse();
-
-            //Func<int> f1 = () => { 
-            //    return 1; 
-            //};
-            //Func<LList<int>> f2 = () => { 
-            //    throw new NotImplementedException();
-            //};
-            //var list = new LList<int>(f1.MakeLazy(), f2.MakeLazy());
         }
     }
 }

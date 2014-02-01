@@ -1,3 +1,4 @@
+using LazySharp.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,7 @@ namespace LazySharp {
             return new L<T>(func);
         }
         public static IEnumerable<T> AsEnumerable<T>(this LList<T> list) {
-            if(list == null)
-                yield break;
-            yield return list.Head.Value();
+            yield return list.NotNull().Head.Value();
         }
         //public static L<int> Add(this L<int> l1, L<int> l2) { 
         //    return new L<int>(() => l1.Value() + l2.Value());

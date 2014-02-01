@@ -4,7 +4,8 @@ using System.Linq;
 using LazySharp.Utils;
 
 namespace LazySharp {
-    public struct L<T> {
+    public class L<T> {
+        //public static readonly L<T> Default = new L<T>(default(T));
         T value;
         Func<T> func;
 
@@ -19,10 +20,8 @@ namespace LazySharp {
 
         public L(T value) {
             this.value = value;
-            this.func = null;
         }
         public L(Func<T> func) {
-            this.value = default(T);
             this.func = func.NotNull();
         }
     }
