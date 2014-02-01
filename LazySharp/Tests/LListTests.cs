@@ -78,9 +78,13 @@ namespace LazySharp.Tests {
 
         [Test]
         public void Infinite() {
-            //foreach(int number in LList.Infinite(5.AsLazy()).AsEnumerable()) {
-                
-            //}
+            int expected = 2;
+            foreach(int number in LList.Infinite(expected.AsLazy()).AsEnumerable()) {
+                number.IsEqual(expected);
+                expected++;
+                if(expected > 10)
+                    return;
+            }
         }
         [Test]
         public void Range() {
