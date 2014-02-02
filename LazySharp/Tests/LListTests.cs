@@ -95,6 +95,17 @@ namespace LazySharp.Tests {
             Assert.Throws<ArgumentNullException>(() => LList.Range(null, L<int>.Default));
             Assert.Throws<ArgumentNullException>(() => LList.Range(L<int>.Default, null));
         }
+        [Test]
+        public void Range_LazyEvaluation() {
+            var range = LList.Range(AsLazyTrackable(5), AsLazyTrackable(2));
+            base.AssertTracks();
+            range = range.Value().Tail;
+            base.AddValueTrack(2).AssertTracks();
+            range.Value();
+            base.AssertTracks();
+            range.Value().Head.Value().IsEqual(6);
+            base.AddValueTrack(5).AssertTracks();
+        }
         [Test, Explicit]
         public void Weird() {
             var weird = GetWeird();
