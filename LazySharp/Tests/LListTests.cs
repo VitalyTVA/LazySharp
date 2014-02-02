@@ -69,6 +69,17 @@ namespace LazySharp.Tests {
             Assert.Throws<ArgumentNullException>(() => LList.Infinite(null));
         }
         [Test]
+        public void Infinite_LazyStartEvaluation() {
+            var infinite = LList.Infinite(AsLazyTrackable(7));
+            base.AssertTracks();
+            infinite = infinite.Value().Tail;
+            base.AssertTracks();
+            infinite.Value();
+            base.AssertTracks();
+            infinite.Value().Head.Value().IsEqual(8);
+            base.AddValueTrack(7).AssertTracks();
+        }
+        [Test]
         public void Range() {
             int expected = 3;
             foreach(int number in LList.Range(expected.AsLazy(), 5.AsLazy()).AsEnumerable()) {
