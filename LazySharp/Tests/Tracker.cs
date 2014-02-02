@@ -61,7 +61,7 @@ namespace LazySharp.Tests {
             return "Track: " + ToStringCore();
         }
         string ToStringCore() {
-            return Convert.ToString(trackItem) + (next != null ? " -> " + next.ToStringCore() : string.Empty);
+            return (next != null ? next.ToStringCore() + " -> " : string.Empty) + Convert.ToString(trackItem);
         }
     }
     public static class TrackExtensions {
@@ -69,7 +69,7 @@ namespace LazySharp.Tests {
             return new Track(value, track);
         }
         public static Track AddFunc<T>(this Track track, Func<T> func, string name) {
-            return new Track((object)name ?? func, track);
+            return new Track(string.IsNullOrEmpty(name) ? (object)func : new Tuple<Func<T>, string>(func, name), track);
         }
     }
 }

@@ -27,57 +27,33 @@ namespace LazySharp.Tests {
             var list = new LList<int>(13.AsLazyTrackable(), LList<int>.Null).AsLazy();
             base.AssertTracks();
             list.AsEnumerable().Single().IsEqual(13);
-            base.AddValueTrack(13);
-            base.AssertTracks();
+            base.AddValueTrack(13).AssertTracks();
             list.AsEnumerable().Single().IsEqual(13);
             base.AssertTracks();
         }
 
         [Test]
         public void TwoElements() {
-            int callCount1 = 0;
-            Func<int> f1 = () => {
-                callCount1++;
-                return 9;
-            };
-            int callCount2 = 0;
-            Func<int> f2 = () => {
-                callCount2++;
-                return 13;
-            };
+            Func<LList<int>> fList2 = () => new LList<int>(13.AsLazyTrackable(), LList<int>.Null);
+            Func<LList<int>> fList1 = () => new LList<int>(9.AsLazyTrackable(), fList2.MakeLazyTrackable("fList2"));
 
-            int listCallCount2 = 0;
-            Func<LList<int>> fList2 = () => {
-                listCallCount2++;
-                return new LList<int>(f2.MakeLazy(), LList<int>.Null);
-            };
-
-            int listCallCount1 = 0;
-            Func<LList<int>> fList1 = () => {
-                listCallCount1++;
-                return new LList<int>(f1.MakeLazy(), fList2.MakeLazy());
-            };
-
-            var list = fList1.MakeLazy();
+            var list = fList1.MakeLazyTrackable("fList1");
             IEnumerator<int> en = list.AsEnumerable().GetEnumerator();
-            callCount1.IsEqual(0); callCount2.IsEqual(0); listCallCount1.IsEqual(0); listCallCount2.IsEqual(0);
+            base.AssertTracks();
             en.MoveNext().IsTrue();
-            callCount1.IsEqual(1); listCallCount1.IsEqual(1); callCount2.IsEqual(0); listCallCount2.IsEqual(0);
+            base.AddFuncTrack(fList1, "fList1").AddValueTrack(9).AssertTracks();
 
             en.Current.IsEqual(9);
-            callCount2.IsEqual(0); listCallCount2.IsEqual(0);
+            base.AssertTracks();
 
             en.MoveNext().IsTrue();
-            callCount2.IsEqual(1); listCallCount2.IsEqual(1);
+            base.AddFuncTrack(fList2, "fList2").AddValueTrack(13).AssertTracks();
 
             en.Current.IsEqual(13);
+            base.AssertTracks();
 
             en.MoveNext().IsFalse();
-
-            callCount1.IsEqual(1);
-            callCount2.IsEqual(1);
-            listCallCount1.IsEqual(1);
-            listCallCount2.IsEqual(1);
+            base.AssertTracks();
         }
 
         [Test]
