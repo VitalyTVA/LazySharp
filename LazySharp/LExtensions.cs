@@ -20,6 +20,12 @@ namespace LazySharp {
         public static L<bool> GreaterThan(this L<int> left, L<int> right) {
             return new L<bool>(() => left.Value() > right.Value());
         }
+        public static L<bool> EqualTo(this L<int> left, L<int> right) {
+            return new L<bool>(() => left.Value() == right.Value());
+        }
+        public static L<bool> EqualTo<T>(this L<T> left, L<T> right) {
+            return new L<bool>(() => object.Equals(left.Value(), right.Value()));
+        }
 
         public static IEnumerable<T> AsEnumerable<T>(this L<LList<T>> list) {
             list.NotNull();

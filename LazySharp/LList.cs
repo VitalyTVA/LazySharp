@@ -1,7 +1,5 @@
 using LazySharp.Utils;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace LazySharp {
     public class LList<T> {
@@ -21,6 +19,7 @@ namespace LazySharp {
             });
         }
         public static L<LList<int>> Range(L<int> start, L<int> count) {
+            //return Infinite(start).Take(count);
             start.NotNull();
             count.NotNull();
             return new L<LList<int>>(() => {
@@ -29,9 +28,19 @@ namespace LazySharp {
                 else
                     return null;
             });
-        }
+        }//test move next without reading value?? start should not be accessed
+        //public static L<LList<T>> Take<T>(this L<LList<T>> list, L<int> count) {
+        //    list.NotNull();
+        //    count.NotNull();
+        //    return new L<LList<T>>(() => {
+        //        if(list.EqualTo(LList<T>.Null).Value())
+        //            return null;
+        //        if(count.EqualTo(0.AsLazy()).Value())
+        //            return null;
+        //        return new LList<T>(list.Value().Head, list.Value().Tail.Take(count.Dec()));
+        //    });
+        //}
     }
-    /*
     public class _LList<T> {
         public _LList(T head, _LList<T> tail) {
             Head = head;
@@ -50,6 +59,12 @@ namespace LazySharp {
                     new _LList<int>(start, Range(start + 1, count - 1)) :
                     null;
         }
-    }
-    */
+        public static _LList<T> Take<T>(this _LList<T> list, int count) {
+            if(list == null)
+                return null;
+            if(count == 0)
+                return null;
+            return new _LList<T>(list.Head, list.Tail.Take(count - 1));
+        }
+    }   
 }
