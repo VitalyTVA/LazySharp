@@ -35,9 +35,9 @@ namespace LazySharp.Tests {
         [Test]
         public void TwoElements() {
             Func<LList<int>> fList2 = () => new LList<int>(AsLazyTrackable(13), LList<int>.Null);
-            Func<LList<int>> fList1 = () => new LList<int>(AsLazyTrackable(9), MakeLazyTrackable(fList2, "fList2"));
+            Func<LList<int>> fList1 = () => new LList<int>(AsLazyTrackable(9), MakeLazyTrackable(() => fList2));
 
-            var list = MakeLazyTrackable(fList1, "fList1");
+            var list = MakeLazyTrackable(() => fList1);
             IEnumerator<int> en = list.AsEnumerable().GetEnumerator();
             base.AssertTracks();
             en.MoveNext().IsTrue();
