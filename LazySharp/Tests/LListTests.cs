@@ -41,13 +41,13 @@ namespace LazySharp.Tests {
             IEnumerator<int> en = list.AsEnumerable().GetEnumerator();
             base.AssertTracks();
             en.MoveNext().IsTrue();
-            base.AddFuncTrack(fList1, "fList1").AddValueTrack(9).AssertTracks();
+            base.AddFuncTrack(() => fList1).AddValueTrack(9).AssertTracks();
 
             en.Current.IsEqual(9);
             base.AssertTracks();
 
             en.MoveNext().IsTrue();
-            base.AddFuncTrack(fList2, "fList2").AddValueTrack(13).AssertTracks();
+            base.AddFuncTrack(() => fList2).AddValueTrack(13).AssertTracks();
 
             en.Current.IsEqual(13);
             base.AssertTracks();
@@ -106,6 +106,53 @@ namespace LazySharp.Tests {
             range.Value().Head.Value().IsEqual(6);
             base.AddValueTrack(5).AssertTracks();
         }
+        [Test]
+        public void Take_NullArgs() {
+            Assert.Throws<ArgumentNullException>(() => LList.Take((L<LList<int>>)null, L<int>.Default));
+            Assert.Throws<ArgumentNullException>(() => LList.Take(LList<int>.Null, null));
+        }
+        [Test]
+        public void Take_LazyEvaluation() {
+            Func<LList<string>> fList3 = () => new LList<string>(AsLazyTrackable("3"), LList<string>.Null);
+            Func<LList<string>> fList2 = () => new LList<string>(AsLazyTrackable("2"), MakeLazyTrackable(() => fList3));
+            Func<LList<string>> fList1 = () => new LList<string>(AsLazyTrackable("1"), MakeLazyTrackable(() => fList2));
+
+            var first = MakeLazyTrackable(() => fList1).Take(AsLazyTrackable(2));
+            base.AssertTracks();
+
+            var second = first.Value().Tail;
+            base.AddValueTrack(2).AddFuncTrack(() => fList1).AssertTracks();
+
+            var third = second.Value().Tail;
+            base.AddFuncTrack(() => fList2).AssertTracks();
+
+            third.Value().IsNull();
+            base.AssertTracks();
+
+            second.Value().Head.Value().IsEqual("2");
+            base.AddValueTrack("2").AssertTracks();
+
+            first.Value().Head.Value().IsEqual("1");
+            base.AddValueTrack("1").AssertTracks();
+        }
+        [Test]
+        public void Take_LazyEvaluation_ShortList() {
+            Func<LList<string>> fList2 = () => new LList<string>(AsLazyTrackable("2"), LList<string>.Null);
+            Func<LList<string>> fList1 = () => new LList<string>(AsLazyTrackable("1"), MakeLazyTrackable(() => fList2));
+
+            var first = MakeLazyTrackable(() => fList1).Take(AsLazyTrackable(3));
+            base.AssertTracks();
+
+            var second = first.Value().Tail;
+            base.AddValueTrack(3).AddFuncTrack(() => fList1).AssertTracks();
+
+            var third = second.Value().Tail;
+            base.AddFuncTrack(() => fList2).AssertTracks();
+
+            third.Value().IsNull();
+            base.AssertTracks();
+        }
+
         [Test, Explicit]
         public void Weird() {
             var weird = GetWeird();

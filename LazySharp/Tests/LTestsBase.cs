@@ -18,8 +18,9 @@ namespace LazySharp.Tests {
             expectedTrack = expectedTrack.AddValue(value);
             return this;
         }
-        public LTestsBase AddFuncTrack<T>(Func<T> func, string name = null) {
-            expectedTrack = expectedTrack.AddFunc(func, name);
+        public LTestsBase AddFuncTrack<T>(Expression<Func<Func<T>>> func) {
+            var info = GetFuncInfo(func);
+            expectedTrack = expectedTrack.AddFunc(info.Item1, info.Item2);
             return this;
         }
         public LTestsBase AssertTracks() {
@@ -31,9 +32,14 @@ namespace LazySharp.Tests {
             return tracker.AsTrackable(value);
         }
         public L<T> MakeLazyTrackable<T>(Expression<Func<Func<T>>> func) {
+            var info = GetFuncInfo(func);
+            return tracker.MakeTrackable(info.Item1, info.Item2);
+        }
+
+        static Tuple<Func<T>, string> GetFuncInfo<T>(Expression<Func<Func<T>>> func) {
             MemberExpression body = (MemberExpression)func.Body;
             ConstantExpression constant = (ConstantExpression)body.Expression;
-            return tracker.MakeTrackable((Func<T>)((FieldInfo)body.Member).GetValue(constant.Value), body.Member.Name);
+            return new Tuple<Func<T>, string>((Func<T>)((FieldInfo)body.Member).GetValue(constant.Value), body.Member.Name);
         }
     }
 }

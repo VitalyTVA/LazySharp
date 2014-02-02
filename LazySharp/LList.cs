@@ -19,27 +19,27 @@ namespace LazySharp {
             });
         }
         public static L<LList<int>> Range(L<int> start, L<int> count) {
-            //return Infinite(start).Take(count);
-            start.NotNull();
+            return Infinite(start).Take(count);
+            //start.NotNull();
+            //count.NotNull();
+            //return new L<LList<int>>(() => {
+            //    if(count.GreaterThan(0.AsLazy()).Value())
+            //        return new LList<int>(start, Range(start.Inc(), count.Dec()));
+            //    else
+            //        return null;
+            //});
+        }
+        public static L<LList<T>> Take<T>(this L<LList<T>> list, L<int> count) {
+            list.NotNull();
             count.NotNull();
-            return new L<LList<int>>(() => {
-                if(count.GreaterThan(0.AsLazy()).Value())
-                    return new LList<int>(start, Range(start.Inc(), count.Dec()));
-                else
+            return new L<LList<T>>(() => {
+                if(count.EqualTo(0.AsLazy()).Value())
                     return null;
+                if(list.EqualTo(LList<T>.Null).Value())
+                    return null;
+                return new LList<T>(list.Value().Head, list.Value().Tail.Take(count.Dec()));
             });
-        }//test move next without reading value?? start should not be accessed
-        //public static L<LList<T>> Take<T>(this L<LList<T>> list, L<int> count) {
-        //    list.NotNull();
-        //    count.NotNull();
-        //    return new L<LList<T>>(() => {
-        //        if(list.EqualTo(LList<T>.Null).Value())
-        //            return null;
-        //        if(count.EqualTo(0.AsLazy()).Value())
-        //            return null;
-        //        return new LList<T>(list.Value().Head, list.Value().Tail.Take(count.Dec()));
-        //    });
-        //}
+        }
     }
     public class _LList<T> {
         public _LList(T head, _LList<T> tail) {
