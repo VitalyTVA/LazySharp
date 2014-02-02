@@ -24,16 +24,13 @@ namespace LazySharp.Tests {
         }
         [Test]
         public void HeadOnly() {
-            int callCount = 0;
-            Func<int> f1 = () => {
-                callCount++;
-                return 13;
-            };
-            var list = new LList<int>(f1.MakeLazy(), LList<int>.Null).AsLazy();
+            var list = new LList<int>(13.AsLazyTrackable(), LList<int>.Null).AsLazy();
+            base.AssertTracks();
             list.AsEnumerable().Single().IsEqual(13);
-            callCount.IsEqual(1);
+            base.AddValueTrack(13);
+            base.AssertTracks();
             list.AsEnumerable().Single().IsEqual(13);
-            callCount.IsEqual(1);
+            base.AssertTracks();
         }
 
         [Test]
