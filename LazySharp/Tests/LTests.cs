@@ -13,15 +13,13 @@ namespace LazySharp.Tests {
 
         [Test]
         public void NoCopy() {
-            int callCount = 0;
-            Func<int> f = () => {
-                callCount++;
-                return 13;
-            };
-            var lazy = f.MakeLazy();
+            var lazy = 13.AsLazyTrackable();
+            base.AssertTracks();
             NoCopyCore(lazy);
+            base.AddValueTrack(13);
+            base.AssertTracks();
             lazy.Value();
-            callCount.IsEqual(1);
+            base.AssertTracks();
         }
         void NoCopyCore(L<int> lazy) {
             lazy.Value();

@@ -11,10 +11,10 @@ namespace LazySharp.Tests {
             DefaultTracker.Reset();
             track = null;
         }
-        protected void AddTrack<T>(T value) {
+        protected void AddValueTrack<T>(T value) {
             track = track.AddValue(value);
         }
-        protected internal void AddTrack<T>(Func<T> func, string name) {
+        protected internal void AddFuncTrack<T>(Func<T> func, string name) {
             track = track.AddFunc(func, name);
         }
         protected void AssertTracks() {

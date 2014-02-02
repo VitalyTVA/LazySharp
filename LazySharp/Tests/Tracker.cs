@@ -11,10 +11,10 @@ namespace LazySharp.Tests {
         public static void Reset() {
             Tracker = new Tracker();
         }
-        public static L<T> AsLazyTrackable<T>(T value) {
+        public static L<T> AsLazyTrackable<T>(this T value) {
             return Tracker.AsTrackable(value);
         }
-        public static L<T> MakeLazyTrackable<T>(Func<T> func, string name = null) {
+        public static L<T> MakeLazyTrackable<T>(this Func<T> func, string name = null) {
             return Tracker.MakeTrackable(func, name);
         }
     }
@@ -58,7 +58,10 @@ namespace LazySharp.Tests {
             return false;
         }
         public override string ToString() {
-            return Convert.ToString(trackItem) + (next != null ? " -> " + next.ToString() : string.Empty);
+            return "Track: " + ToStringCore();
+        }
+        string ToStringCore() {
+            return Convert.ToString(trackItem) + (next != null ? " -> " + next.ToStringCore() : string.Empty);
         }
     }
     public static class TrackExtensions {
