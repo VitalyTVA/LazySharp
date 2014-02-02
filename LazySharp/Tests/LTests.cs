@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace LazySharp.Tests {
     [TestFixture]
-    public class LTests {
+    public class LTests : LTestsBase {
         [Test]
         public void NullFunc() {
             Assert.Throws<ArgumentNullException>(() => ((Func<int>)null).MakeLazy());

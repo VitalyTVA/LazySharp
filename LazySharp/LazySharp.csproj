@@ -50,6 +50,8 @@
     <Compile Include="Tests\FluentAssert.cs" />
     <Compile Include="Tests\LListTests.cs" />
     <Compile Include="Tests\LTests.cs" />
+    <Compile Include="Tests\LTestsBase.cs" />
+    <Compile Include="Tests\Tracker.cs" />
     <Compile Include="Utils\Argument.cs" />
   </ItemGroup>
   <ItemGroup>

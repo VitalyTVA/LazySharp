@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace LazySharp.Tests {
     [TestFixture]
-    public class LListTests {
+    public class LListTests : LTestsBase {
         [Test]
         public void Null() {
             var enumerable = ((L<LList<int>>)null).AsEnumerable();
