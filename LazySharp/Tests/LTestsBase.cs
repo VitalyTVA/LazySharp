@@ -5,23 +5,31 @@ using System.Linq;
 
 namespace LazySharp.Tests {
     public class LTestsBase {
-        Track track;
+        Track expectedTrack;
+        Tracker tracker;
         [SetUp]
         public void SetUp() {
-            DefaultTracker.Reset();
-            track = null;
+            tracker = new Tracker();
+            expectedTrack = null;
         }
         public LTestsBase AddValueTrack<T>(T value) {
-            track = track.AddValue(value);
+            expectedTrack = expectedTrack.AddValue(value);
             return this;
         }
         public LTestsBase AddFuncTrack<T>(Func<T> func, string name = null) {
-            track = track.AddFunc(func, name);
+            expectedTrack = expectedTrack.AddFunc(func, name);
             return this;
         }
         public LTestsBase AssertTracks() {
-            Assert.AreEqual(track, DefaultTracker.Tracker.Track);
+            Assert.AreEqual(expectedTrack, tracker.Track);
             return this;
+        }
+
+        public L<T> AsLazyTrackable<T>(T value) {
+            return tracker.AsTrackable(value);
+        }
+        public L<T> MakeLazyTrackable<T>(Func<T> func, string name = null) {
+            return tracker.MakeTrackable(func, name);
         }
     }
 }

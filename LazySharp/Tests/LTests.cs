@@ -13,7 +13,7 @@ namespace LazySharp.Tests {
 
         [Test]
         public void NoCopy() {
-            var lazy = 13.AsLazyTrackable();
+            var lazy = AsLazyTrackable(13);
             base.AssertTracks();
             NoCopyCore(lazy);
             base.AddValueTrack(13).AssertTracks();

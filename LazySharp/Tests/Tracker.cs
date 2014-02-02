@@ -6,18 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace LazySharp.Tests {
-    public static class DefaultTracker {
-        public static Tracker Tracker { get; private set; }
-        public static void Reset() {
-            Tracker = new Tracker();
-        }
-        public static L<T> AsLazyTrackable<T>(this T value) {
-            return Tracker.AsTrackable(value);
-        }
-        public static L<T> MakeLazyTrackable<T>(this Func<T> func, string name = null) {
-            return Tracker.MakeTrackable(func, name);
-        }
-    }
     public class Tracker {
         public Track Track { get; private set; }
         public Tracker() {

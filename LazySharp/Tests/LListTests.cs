@@ -24,7 +24,7 @@ namespace LazySharp.Tests {
         }
         [Test]
         public void HeadOnly() {
-            var list = new LList<int>(13.AsLazyTrackable(), LList<int>.Null).AsLazy();
+            var list = new LList<int>(AsLazyTrackable(13), LList<int>.Null).AsLazy();
             base.AssertTracks();
             list.AsEnumerable().Single().IsEqual(13);
             base.AddValueTrack(13).AssertTracks();
@@ -34,10 +34,10 @@ namespace LazySharp.Tests {
 
         [Test]
         public void TwoElements() {
-            Func<LList<int>> fList2 = () => new LList<int>(13.AsLazyTrackable(), LList<int>.Null);
-            Func<LList<int>> fList1 = () => new LList<int>(9.AsLazyTrackable(), fList2.MakeLazyTrackable("fList2"));
+            Func<LList<int>> fList2 = () => new LList<int>(AsLazyTrackable(13), LList<int>.Null);
+            Func<LList<int>> fList1 = () => new LList<int>(AsLazyTrackable(9), MakeLazyTrackable(fList2, "fList2"));
 
-            var list = fList1.MakeLazyTrackable("fList1");
+            var list = MakeLazyTrackable(fList1, "fList1");
             IEnumerator<int> en = list.AsEnumerable().GetEnumerator();
             base.AssertTracks();
             en.MoveNext().IsTrue();
