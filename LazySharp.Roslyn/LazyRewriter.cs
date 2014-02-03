@@ -18,11 +18,9 @@ using Roslyn.Services.CSharp;
 namespace LazySharp.Roslyn {
     class LazyRewriter : SyntaxRewriter {
         public override SyntaxNode VisitNamespaceDeclaration(NamespaceDeclarationSyntax node) {
-            var trail = node.Name.GetTrailingTrivia().Single();
-            QualifiedNameSyntax namespaceSyntax = Syntax.QualifiedName(Syntax.IdentifierName("LazySharp"), Syntax.IdentifierName("Generated")).WithTrailingTrivia(trail);
+            QualifiedNameSyntax namespaceSyntax = Syntax.QualifiedName(Syntax.IdentifierName("LazySharp"), Syntax.IdentifierName("Generated")).WithTrailingTrivia(node.Name.GetTrailingTrivia());
             return Syntax.NamespaceDeclaration(namespaceSyntax.WithLeadingTrivia(node.NamespaceKeyword.TrailingTrivia), node.Externs, node.Usings, node.Members)
                 .WithOpenBraceToken(node.OpenBraceToken);
-            //return base.VisitNamespaceDeclaration(node);
         }
         //public override SyntaxNode VisitParameter(ParameterSyntax node) {
         //    var trail = node.Type.GetTrailingTrivia().Single();
