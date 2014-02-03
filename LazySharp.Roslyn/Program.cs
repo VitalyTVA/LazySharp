@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Diagnostics;
+using System.IO;
 
 #if ROSLYN_NEW
 using Microsoft.CodeAnalysis;
@@ -18,19 +17,39 @@ using Roslyn.Services.CSharp;
 
 namespace LazySharp.Roslyn {
     class Program {
+        const string path = @"..\..\";
         static void Main(string[] args) {
-            //var compilation = Compilation.Create("test.dll")
-            //    .AddReferences(new MetadataFileReference(typeof(object).Assembly.Location))
-            //    .WithOptions(new CompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-            //    .AddSyntaxTrees(tree);
-
-            //var rewriter = new LazyRewriter();
-            //var newRoot = rewriter.Visit(root);
-            //Debug.WriteLine(newRoot.GetText());
-
-            //var result = compilation.Emit("test.dll");
-            Console.WriteLine("!!!!!!!!!!!!!!!!!");
+            const string prototypesDllName = "LazySharp.Prototypes.dll";
+            var compilation = Compilation.Create(prototypesDllName)
+                .AddReferences(
+                    new MetadataFileReference(typeof(object).Assembly.Location),
+                    new MetadataFileReference(typeof(Enumerable).Assembly.Location)
+                 ).WithOptions(new CompilationOptions(OutputKind.DynamicallyLinkedLibrary))
+                .AddSyntaxTrees(
+                    GetTree(@"Utils\Argument"), 
+                    GetTree(@"L"),
+                    GetTree(@"Prototypes\List.Generic")
+                );
+            EmitAndLog(compilation, prototypesDllName);
             return;
+        }
+        static void EmitAndLog(Compilation compilation, string dllName) {
+            var result = compilation.Emit(dllName);
+            if(result.Success)
+                Console.WriteLine("Emit success: " + dllName);
+            else {
+                Console.WriteLine("EMIT ERROR: " + dllName);
+                foreach(var item in result.Diagnostics) {
+                    Console.WriteLine(item.ToString());
+                    
+                }
+            }
+        }
+        static SyntaxTree GetTree(string fileName) {
+            return SyntaxTree.ParseFile(GetFilePath(fileName));
+        }
+        static string GetFilePath(string fileName) {
+            return Path.Combine(path, fileName + ".cs");
         }
         //class LazyRewriter : SyntaxRewriter {
         //    public override SyntaxNode VisitParameter(ParameterSyntax node) {
