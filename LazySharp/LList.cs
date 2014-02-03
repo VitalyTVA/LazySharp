@@ -37,7 +37,7 @@ namespace LazySharp {
                     return null;
                 if(list.EqualTo(LList<T>.Null).Value())
                     return null;
-                return new LList<T>(list.Value().Head, list.Value().Tail.Take(count.Dec()));
+                return new LList<T>(/*->>>> should be Lazy??*/ list.Value().Head, list.Value().Tail.Take(count.Dec()));
             });
         }
     }
