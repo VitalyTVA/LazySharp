@@ -29,7 +29,8 @@ namespace LazySharp.Roslyn {
             //Debug.WriteLine(newRoot.GetText());
 
             //var result = compilation.Emit("test.dll");
-
+            Console.WriteLine("!!!!!!!!!!!!!!!!!");
+            return;
         }
         //class LazyRewriter : SyntaxRewriter {
         //    public override SyntaxNode VisitParameter(ParameterSyntax node) {

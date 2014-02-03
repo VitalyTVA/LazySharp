@@ -8,6 +8,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LazySharp.Roslyn.New", "LazySharp.Roslyn\LazySharp.Roslyn.New.csproj", "{C425C092-2E32-4AC8-8DF5-A09E88309EC9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LazySharp", "LazySharp\LazySharp.csproj", "{3EFA2D8E-1AFE-4C6E-A492-E111F19799A9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D70EE6ED-5060-4C78-AD04-3E5D76225ED2} = {D70EE6ED-5060-4C78-AD04-3E5D76225ED2}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
