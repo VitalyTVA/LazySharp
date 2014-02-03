@@ -17,16 +17,23 @@ using Roslyn.Services.CSharp;
 
 namespace LazySharp.Roslyn {
     class LazyRewriter : SyntaxRewriter {
-        public override SyntaxNode VisitParameter(ParameterSyntax node) {
-            var trail = node.Type.GetTrailingTrivia().Single();
-            var clearType = node.Type.ReplaceTrivia(trail, SyntaxTriviaList.Empty);
-            var newType = Syntax.GenericName("L").AddTypeArgumentListArguments(clearType).WithTrailingTrivia(trail);
-            return node.WithType(newType);
+        public override SyntaxNode VisitNamespaceDeclaration(NamespaceDeclarationSyntax node) {
+            var trail = node.Name.GetTrailingTrivia().Single();
+            QualifiedNameSyntax namespaceSyntax = Syntax.QualifiedName(Syntax.IdentifierName("LazySharp"), Syntax.IdentifierName("Generated")).WithTrailingTrivia(trail);
+            return Syntax.NamespaceDeclaration(namespaceSyntax.WithLeadingTrivia(node.NamespaceKeyword.TrailingTrivia), node.Externs, node.Usings, node.Members)
+                .WithOpenBraceToken(node.OpenBraceToken);
+            //return base.VisitNamespaceDeclaration(node);
         }
-        public override SyntaxNode VisitBinaryExpression(BinaryExpressionSyntax node) {
-            var syntaxSeparatedList = Syntax.SeparatedList(Syntax.Argument(node.Right));
-            var syntaxArgumentList = Syntax.ArgumentList(syntaxSeparatedList);
-            return Syntax.InvocationExpression(Syntax.MemberAccessExpression(SyntaxKind.MemberAccessExpression, node.Left, Syntax.IdentifierName("Add")), syntaxArgumentList);
-        }
+        //public override SyntaxNode VisitParameter(ParameterSyntax node) {
+        //    var trail = node.Type.GetTrailingTrivia().Single();
+        //    var clearType = node.Type.ReplaceTrivia(trail, SyntaxTriviaList.Empty);
+        //    var newType = Syntax.GenericName("L").AddTypeArgumentListArguments(clearType).WithTrailingTrivia(trail);
+        //    return node.WithType(newType);
+        //}
+        //public override SyntaxNode VisitBinaryExpression(BinaryExpressionSyntax node) {
+        //    var syntaxSeparatedList = Syntax.SeparatedList(Syntax.Argument(node.Right));
+        //    var syntaxArgumentList = Syntax.ArgumentList(syntaxSeparatedList);
+        //    return Syntax.InvocationExpression(Syntax.MemberAccessExpression(SyntaxKind.MemberAccessExpression, node.Left, Syntax.IdentifierName("Add")), syntaxArgumentList);
+        //}
     }
 }

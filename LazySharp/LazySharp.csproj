@@ -37,6 +37,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Generated\List.Generic.cs" />
     <Compile Include="L.cs" />
     <Compile Include="LExtensions.cs" />
     <Compile Include="Prototypes\List.cs" />
