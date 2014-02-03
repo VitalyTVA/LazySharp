@@ -28,7 +28,8 @@ namespace LazySharp.Roslyn {
                 .AddSyntaxTrees(
                     GetTree(@"Utils\Argument"), 
                     GetTree(@"L"),
-                    GetTree(@"Prototypes\List.Generic")
+                    GetTree(@"Prototypes\List.Generic"),
+                    GetTree(@"Prototypes\List")
                 );
             EmitAndLog(compilation, prototypesDllName);
             return;
@@ -51,18 +52,5 @@ namespace LazySharp.Roslyn {
         static string GetFilePath(string fileName) {
             return Path.Combine(path, fileName + ".cs");
         }
-        //class LazyRewriter : SyntaxRewriter {
-        //    public override SyntaxNode VisitParameter(ParameterSyntax node) {
-        //        var trail = node.Type.GetTrailingTrivia().Single();
-        //        var clearType = node.Type.ReplaceTrivia(trail, SyntaxTriviaList.Empty);
-        //        var newType = Syntax.GenericName("L").AddTypeArgumentListArguments(clearType).WithTrailingTrivia(trail);
-        //        return node.WithType(newType);
-        //    }
-        //    public override SyntaxNode VisitBinaryExpression(BinaryExpressionSyntax node) {
-        //        var syntaxSeparatedList = Syntax.SeparatedList(Syntax.Argument(node.Right));
-        //        var syntaxArgumentList = Syntax.ArgumentList(syntaxSeparatedList);
-        //        return Syntax.InvocationExpression(Syntax.MemberAccessExpression(SyntaxKind.MemberAccessExpression, node.Left, Syntax.IdentifierName("Add")), syntaxArgumentList);
-        //    }
-        //}
     }
 }
