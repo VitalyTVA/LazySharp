@@ -16,12 +16,15 @@ namespace LazySharp.Roslyn.Tests {
             }
         }
         [Test]
-        public void RewriteProperty1() {
+        public void RewriteProperty() {
             AssertRewritedProperty("public X<int> Prop { get; set; }", "public int Prop { get; set; }");
+            AssertRewritedProperty("protected X<Type> Prop { get; set; }", "protected Type Prop { get; set; }");
+            AssertRewritedProperty("X<Type> Prop { get; set; }", "Type Prop { get; set; }");
+            AssertRewritedProperty("protected virtual X<Func<int, String>> Prop { get; set; }", "protected virtual Func<int, String> Prop { get; set; }");
         }
         void AssertRewritedProperty(string expected, string original) {
             string context = @"using System; namespace Sample.From {{ 
-    class X {{
+    class Test {{
         {0}
     }}
 }}";

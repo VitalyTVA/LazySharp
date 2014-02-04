@@ -51,19 +51,31 @@ namespace LazySharp.Roslyn {
                     .WithTrailingTrivia(node.Identifier.TrailingTrivia);
                 node = node.WithIdentifier(newNode);
             }
-            return base.VisitIdentifierName(node);
+            return node;
         }
     }
     class TypeRewriter : SyntaxRewriter {
         public static PropertyDeclarationSyntax RewritePropertyType(PropertyDeclarationSyntax node, string wrapperClassName) {
-            var trail = node.Type.GetTrailingTrivia().Single();
-            var clearType = node.Type.ReplaceTrivia(trail, SyntaxTriviaList.Empty);
-            var newType = Syntax.GenericName(wrapperClassName).AddTypeArgumentListArguments(clearType).WithTrailingTrivia(node.Type.GetTrailingTrivia());
+            var trails = node.Type.GetTrailingTrivia();
+            var leads = node.Type.GetLeadingTrivia();
+            var clearType = node.Type
+                .ReplaceTrivia(leads.Concat(trails), (_, __) => SyntaxTriviaList.Empty);
+            var newType = Syntax.GenericName(wrapperClassName)
+                .AddTypeArgumentListArguments(clearType)
+                .WithTrailingTrivia(trails)
+                .WithLeadingTrivia(leads);
             return node.WithType(newType);
+            //return node.WithType((TypeSyntax)new TypeRewriter(wrapperClassName).Visit(node.Type));
         }
         readonly string wrapperClassName;
         TypeRewriter(string wrapperClassName) {
             this.wrapperClassName = wrapperClassName;
+        }
+        public override SyntaxNode VisitPredefinedType(PredefinedTypeSyntax node) {
+            return Syntax.GenericName(wrapperClassName).AddTypeArgumentListArguments(Syntax.PredefinedType(node.Keyword));
+        }
+        public override SyntaxTrivia VisitTrivia(SyntaxTrivia trivia) {
+            return base.VisitTrivia(trivia);
         }
     }
 }
