@@ -38,14 +38,12 @@ namespace LazySharp.Roslyn {
                                         );
             EmitAndLog(prototypesCompilation, prototypesDllName);
 
-            string newFileName = GetFilePath(@"Generated\List.Generic");
-            File.WriteAllText(newFileName, new LazyRewriter().Visit(listGenericTree.GetRoot()).GetText().ToString());
-            SyntaxTree listGenericTreeModifed = SyntaxTree.ParseFile(newFileName);
+            SyntaxTree listGenericTreeModifed = GenerateFile(listGenericTree, @"Generated\List.Generic");
 
             Compilation generatedCompilation = (Compilation)prototypesCompilation.AddSyntaxTrees(listGenericTreeModifed).UpdateOutputName(generatedDllName);
             EmitAndLog(generatedCompilation, generatedDllName);
         }
-        static void EmitAndLog(Compilation compilation, string dllName) {
+        static bool EmitAndLog(Compilation compilation, string dllName) {
             var result = compilation.Emit(dllName);
             if(result.Success)
                 Console.WriteLine("Emit success: " + dllName);
@@ -53,9 +51,18 @@ namespace LazySharp.Roslyn {
                 Console.WriteLine("EMIT ERROR: " + dllName);
                 foreach(var item in result.Diagnostics) {
                     Console.WriteLine(item.ToString());
-                    
                 }
+                throw new InvalidOperationException(dllName + " library not emited");
             }
+            return result.Success;
+        }
+        static SyntaxTree GenerateFile(SyntaxTree orginal, string fileName) {
+            string newFileName = GetFilePath(fileName);
+            string newText = orginal.GetRoot().GetText().ToString();
+            string oldText = File.Exists(fileName) ? File.ReadAllText(fileName) : null;
+            if(newText != oldText)
+                File.WriteAllText(newFileName, new LazyRewriter().Visit(orginal.GetRoot()).GetText().ToString());
+            return SyntaxTree.ParseFile(newFileName);
         }
         static SyntaxTree GetTree(string fileName) {
             return SyntaxTree.ParseFile(GetFilePath(fileName));
