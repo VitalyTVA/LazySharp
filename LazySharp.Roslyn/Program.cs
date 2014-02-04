@@ -58,10 +58,10 @@ namespace LazySharp.Roslyn {
         }
         static SyntaxTree GenerateFile(SyntaxTree orginal, string fileName) {
             string newFileName = GetFilePath(fileName);
-            string newText = orginal.GetRoot().GetText().ToString();
-            string oldText = File.Exists(fileName) ? File.ReadAllText(fileName) : null;
+            string newText = new LazyRewriter().Visit(orginal.GetRoot()).GetText().ToString();
+            string oldText = File.Exists(newFileName) ? File.ReadAllText(newFileName) : null;
             if(newText != oldText)
-                File.WriteAllText(newFileName, new LazyRewriter().Visit(orginal.GetRoot()).GetText().ToString());
+                File.WriteAllText(newFileName, newText);
             return SyntaxTree.ParseFile(newFileName);
         }
         static SyntaxTree GetTree(string fileName) {
