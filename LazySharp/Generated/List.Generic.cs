@@ -1,4 +1,5 @@
 using System;
+
 namespace LazySharp.Generated {
     public class List<T> {
         public List(T head, List<T> tail) {
