@@ -2,11 +2,11 @@ using System;
 
 namespace LazySharp.Generated {
     public class List<T> {
-        public List(T head, List<T> tail) {
+        public List(L<T> head, L<List<T>> tail) {
             Head = head;
             Tail = tail;
         }
-        public T Head { get; private set; }
-        public List<T> Tail { get; private set; }
+        public L<T> Head { get; private set; }
+        public L<List<T>> Tail { get; private set; }
     }
 }

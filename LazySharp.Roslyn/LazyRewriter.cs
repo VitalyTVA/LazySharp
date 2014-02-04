@@ -20,17 +20,12 @@ namespace LazySharp.Roslyn {
         public override SyntaxNode VisitNamespaceDeclaration(NamespaceDeclarationSyntax node) {
             return base.VisitNamespaceDeclaration(NamespaceRewriter.RewriteNamespace(node, "Prototypes", "Generated"));
         }
-        //public override SyntaxNode VisitParameter(ParameterSyntax node) {
-        //    var trail = node.Type.GetTrailingTrivia().Single();
-        //    var clearType = node.Type.ReplaceTrivia(trail, SyntaxTriviaList.Empty);
-        //    var newType = Syntax.GenericName("L").AddTypeArgumentListArguments(clearType).WithTrailingTrivia(node.Type.GetTrailingTrivia());
-        //    return node.WithType(newType);
-        //}
-        //public override SyntaxNode VisitBinaryExpression(BinaryExpressionSyntax node) {
-        //    var syntaxSeparatedList = Syntax.SeparatedList(Syntax.Argument(node.Right));
-        //    var syntaxArgumentList = Syntax.ArgumentList(syntaxSeparatedList);
-        //    return Syntax.InvocationExpression(Syntax.MemberAccessExpression(SyntaxKind.MemberAccessExpression, node.Left, Syntax.IdentifierName("Add")), syntaxArgumentList);
-        //}
+        public override SyntaxNode VisitParameter(ParameterSyntax node) {
+            return node.WithType(TypeRewriter.WrapType(node.Type, "L"));
+        }
+        public override SyntaxNode VisitPropertyDeclaration(PropertyDeclarationSyntax node) {
+            return node.WithType(TypeRewriter.WrapType(node.Type, "L"));
+        }
     }
 
     class NamespaceRewriter : SyntaxRewriter {
@@ -56,15 +51,16 @@ namespace LazySharp.Roslyn {
     }
     class TypeRewriter : SyntaxRewriter {
         public static PropertyDeclarationSyntax RewritePropertyType(PropertyDeclarationSyntax node, string wrapperClassName) {
-            var trails = node.Type.GetTrailingTrivia();
-            var leads = node.Type.GetLeadingTrivia();
-            var clearType = node.Type
-                .ReplaceTrivia(leads.Concat(trails), (_, __) => SyntaxTriviaList.Empty);
-            var newType = Syntax.GenericName(wrapperClassName)
+            return node.WithType(WrapType(node.Type, wrapperClassName));
+        }
+        public static TypeSyntax WrapType(TypeSyntax type, string wrapperClassName) {
+            var trails = type.GetTrailingTrivia();
+            var leads = type.GetLeadingTrivia();
+            var clearType = type.ReplaceTrivia(leads.Concat(trails), (_, __) => SyntaxTriviaList.Empty);
+            return Syntax.GenericName(wrapperClassName)
                 .AddTypeArgumentListArguments(clearType)
                 .WithTrailingTrivia(trails)
                 .WithLeadingTrivia(leads);
-            return node.WithType(newType);
         }
     }
 }
