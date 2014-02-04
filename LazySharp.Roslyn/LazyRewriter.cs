@@ -54,4 +54,16 @@ namespace LazySharp.Roslyn {
             return base.VisitIdentifierName(node);
         }
     }
+    class TypeRewriter : SyntaxRewriter {
+        public static PropertyDeclarationSyntax RewritePropertyType(PropertyDeclarationSyntax node, string wrapperClassName) {
+            var trail = node.Type.GetTrailingTrivia().Single();
+            var clearType = node.Type.ReplaceTrivia(trail, SyntaxTriviaList.Empty);
+            var newType = Syntax.GenericName(wrapperClassName).AddTypeArgumentListArguments(clearType).WithTrailingTrivia(node.Type.GetTrailingTrivia());
+            return node.WithType(newType);
+        }
+        readonly string wrapperClassName;
+        TypeRewriter(string wrapperClassName) {
+            this.wrapperClassName = wrapperClassName;
+        }
+    }
 }

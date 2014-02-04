@@ -9,6 +9,26 @@ using System.Threading.Tasks;
 namespace LazySharp.Roslyn.Tests {
     [TestFixture]
     public class LazyRewriterTests {
+        #region property
+        class TestPropertyRewriter : SyntaxRewriter {
+            public override SyntaxNode VisitPropertyDeclaration(PropertyDeclarationSyntax node) {
+                return base.VisitPropertyDeclaration(TypeRewriter.RewritePropertyType(node, "X"));
+            }
+        }
+        [Test]
+        public void RewriteProperty1() {
+            AssertRewritedProperty("public X<int> Prop { get; set; }", "public int Prop { get; set; }");
+        }
+        void AssertRewritedProperty(string expected, string original) {
+            string context = @"using System; namespace Sample.From {{ 
+    class X {{
+        {0}
+    }}
+}}";
+            AssertRewrited(expected, original, new TestPropertyRewriter(), context);
+        }
+        #endregion
+
         #region namespace
         class TestNamespaceRewriter : SyntaxRewriter {
             public override SyntaxNode VisitNamespaceDeclaration(NamespaceDeclarationSyntax node) {
@@ -50,10 +70,17 @@ namespace LazySharp.Roslyn.Tests {
             AssertRewritedNamespace(expected, text);
         }
         void AssertRewritedNamespace(string expected, string original) {
-            var tree = SyntaxTree.ParseText(original);
-            var rewritten = new TestNamespaceRewriter().Visit(tree.GetRoot());
-            Assert.AreEqual(expected, rewritten.GetText().ToString());
+            AssertRewrited(expected, original, new TestNamespaceRewriter());
         }
         #endregion
+        void AssertRewrited(string expected, string original, SyntaxRewriter rewriter, string context = null) {
+            if(context != null) {
+                expected = string.Format(context, expected);
+                original = string.Format(context, original);
+            }
+            var tree = SyntaxTree.ParseText(original);
+            var rewritten = rewriter.Visit(tree.GetRoot());
+            Assert.AreEqual(expected, rewritten.GetText().ToString());
+        }
     }
 }
