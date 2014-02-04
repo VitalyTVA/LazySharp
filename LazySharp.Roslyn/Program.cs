@@ -18,10 +18,15 @@ using Roslyn.Compilers.Common;
 
 namespace LazySharp.Roslyn {
     class Program {
-        const string path = @"..\..\";
+        static string path = @"..\..\";
         static void Main(string[] args) {
+            if(Directory.GetCurrentDirectory().EndsWith("Roslyn"))
+                path += @"..\";
+
             const string prototypesDllName = "LazySharp.Prototypes.dll";
+            #if !ROSLYN_NEW
             const string generatedDllName = "LazySharp.Generated.dll";
+            #endif
 
             SyntaxTree listGenericTree = GetTree(@"Prototypes\List.Generic");
 
@@ -40,8 +45,10 @@ namespace LazySharp.Roslyn {
 
             SyntaxTree listGenericTreeModifed = GenerateFile(listGenericTree, @"Generated\List.Generic");
 
+            #if !ROSLYN_NEW
             Compilation generatedCompilation = (Compilation)prototypesCompilation.AddSyntaxTrees(listGenericTreeModifed).UpdateOutputName(generatedDllName);
             EmitAndLog(generatedCompilation, generatedDllName);
+            #endif
         }
         static bool EmitAndLog(Compilation compilation, string dllName) {
             var result = compilation.Emit(dllName);
@@ -49,9 +56,11 @@ namespace LazySharp.Roslyn {
                 Console.WriteLine("Emit success: " + dllName);
             else {
                 Console.WriteLine("EMIT ERROR: " + dllName);
+                #if !ROSLYN_NEW
                 foreach(var item in result.Diagnostics) {
                     Console.WriteLine(item.ToString());
                 }
+                #endif
                 throw new InvalidOperationException(dllName + " library not emited");
             }
             return result.Success;
