@@ -56,11 +56,11 @@ namespace LazySharp.Roslyn {
                 Console.WriteLine("Emit success: " + dllName);
             else {
                 Console.WriteLine("EMIT ERROR: " + dllName);
-                #if !ROSLYN_NEW
+                
                 foreach(var item in result.Diagnostics) {
                     Console.WriteLine(item.ToString());
                 }
-                #endif
+                
                 throw new InvalidOperationException(dllName + " library not emited");
             }
             return result.Success;
