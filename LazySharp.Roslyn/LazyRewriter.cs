@@ -65,17 +65,6 @@ namespace LazySharp.Roslyn {
                 .WithTrailingTrivia(trails)
                 .WithLeadingTrivia(leads);
             return node.WithType(newType);
-            //return node.WithType((TypeSyntax)new TypeRewriter(wrapperClassName).Visit(node.Type));
-        }
-        readonly string wrapperClassName;
-        TypeRewriter(string wrapperClassName) {
-            this.wrapperClassName = wrapperClassName;
-        }
-        public override SyntaxNode VisitPredefinedType(PredefinedTypeSyntax node) {
-            return Syntax.GenericName(wrapperClassName).AddTypeArgumentListArguments(Syntax.PredefinedType(node.Keyword));
-        }
-        public override SyntaxTrivia VisitTrivia(SyntaxTrivia trivia) {
-            return base.VisitTrivia(trivia);
         }
     }
 }
