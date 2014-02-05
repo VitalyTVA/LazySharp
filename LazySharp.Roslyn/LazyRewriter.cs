@@ -41,14 +41,15 @@ namespace LazySharp.Roslyn {
     }
     static class FieldRewriter {
         public static FieldDeclarationSyntax RewriteFieldDeclaration(FieldDeclarationSyntax node, string wrapperClassName) {
-            var varieables = node.Declaration.Variables
+            var variables = node.Declaration.Variables
                 .Select(x => {
                     var newExpression = Syntax.ObjectCreationExpression(TypeRewriter.WrapType(node.Declaration.Type, wrapperClassName, false).WithLeadingTrivia(Syntax.Whitespace(" ")))
-                        .WithArgumentList(Syntax.ArgumentList(Syntax.SeparatedList(Syntax.Argument(x.Initializer.Value))));
-                    return x.WithInitializer(Syntax.EqualsValueClause(newExpression.WithLeadingTrivia(Syntax.Whitespace(" "))));
+                        .WithArgumentList(Syntax.ArgumentList(Syntax.SeparatedList(Syntax.Argument(x.Initializer.Value))))
+                        .WithLeadingTrivia(Syntax.Whitespace(" "));
+                    return x.WithInitializer(Syntax.EqualsValueClause(newExpression));
                 });
             var variableDeclaration = Syntax.VariableDeclaration(TypeRewriter.WrapType(node.Declaration.Type, wrapperClassName))
-                .AddVariables(varieables.ToArray());
+                .AddVariables(variables.ToArray());
             node = node.WithDeclaration(variableDeclaration);
             return node;
         }
