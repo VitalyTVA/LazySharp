@@ -1,6 +1,5 @@
 using LazySharp.Utils;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace LazySharp {
@@ -27,7 +26,7 @@ namespace LazySharp {
             return new L<bool>(() => object.Equals(left.Value(), right.Value()));
         }
 
-        public static IEnumerable<T> AsEnumerable<T>(this L<LList<T>> list) {
+        public static System.Collections.Generic.IEnumerable<T> AsEnumerable<T>(this L<LList<T>> list) {
             list.NotNull();
             LList<T> listValue = null;
             while((listValue = list.Value()) != null) {

@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace LazySharp.Tests {
@@ -38,7 +37,7 @@ namespace LazySharp.Tests {
             Func<LList<int>> fList1 = () => new LList<int>(AsLazyTrackable(9), MakeLazyTrackable(() => fList2));
 
             var list = MakeLazyTrackable(() => fList1);
-            IEnumerator<int> en = list.AsEnumerable().GetEnumerator();
+            var en = list.AsEnumerable().GetEnumerator();
             base.AssertTracks();
             en.MoveNext().IsTrue();
             base.AddFuncTrack(() => fList1).AddValueTrack(9).AssertTracks();
