@@ -19,6 +19,30 @@ using Roslyn.Services.CSharp;
 namespace LazySharp.Roslyn.Tests {
     [TestFixture]
     public class LazyRewriterTests {
+        #region fields
+        class TestFieldRewriter : SyntaxRewriter {
+            public override SyntaxNode VisitFieldDeclaration(FieldDeclarationSyntax node) {
+                node = FieldRewriter.RewriteFieldDeclaration(node, "L");
+                return base.VisitFieldDeclaration(node);
+            }
+        }
+        [Test]
+        public void RewriteField() {
+            AssertRewritedField(
+                @"public static readonly L<List<T>> Null = new L<List<T>>(default(List<T>));",
+                @"public static readonly List<T> Null = default(List<T>);"
+            );
+        }
+        void AssertRewritedField(string expected, string original) {
+            string context = @"using System; namespace Sample.From {{ 
+    class Test {{
+        {0}
+    }}
+}}";
+            AssertRewrited(expected, original, new TestFieldRewriter(), context);
+        }
+        #endregion
+
         #region null checks
         class AddNullChecksRewriter : SyntaxRewriter {
             public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node) {
