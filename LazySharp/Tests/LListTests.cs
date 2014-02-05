@@ -7,23 +7,23 @@ namespace LazySharp.Tests {
     public class LListTests : LTestsBase {
         [Test]
         public void Null() {
-            var enumerable = ((L<LList<int>>)null).AsEnumerable();
+            var enumerable = ((L<List<int>>)null).AsEnumerable();
             Assert.Throws<ArgumentNullException>(() => enumerable.ToArray());
 
-            Assert.Throws<ArgumentNullException>(() => new LList<int>(0.AsLazy(), null));
+            Assert.Throws<ArgumentNullException>(() => new List<int>(0.AsLazy(), null));
         }
         [Test]
         public void SingleNull() {
-            new LList<object>(L<object>.Default, LList<object>.Null).AsLazy().AsEnumerable().Single().IsNull();
+            new List<object>(L<object>.Default, List<object>.Null).AsLazy().AsEnumerable().Single().IsNull();
         }
         [Test]
         public void Empty() {
-            LList<int> empty = null;
+            List<int> empty = null;
             empty.AsLazy().AsEnumerable().Any().IsFalse();
         }
         [Test]
         public void HeadOnly() {
-            var list = new LList<int>(AsLazyTrackable(13), LList<int>.Null).AsLazy();
+            var list = new List<int>(AsLazyTrackable(13), List<int>.Null).AsLazy();
             base.AssertTracks();
             list.AsEnumerable().Single().IsEqual(13);
             base.AddValueTrack(13).AssertTracks();
@@ -33,8 +33,8 @@ namespace LazySharp.Tests {
 
         [Test]
         public void TwoElements() {
-            Func<LList<int>> fList2 = () => new LList<int>(AsLazyTrackable(13), LList<int>.Null);
-            Func<LList<int>> fList1 = () => new LList<int>(AsLazyTrackable(9), MakeLazyTrackable(() => fList2));
+            Func<List<int>> fList2 = () => new List<int>(AsLazyTrackable(13), List<int>.Null);
+            Func<List<int>> fList1 = () => new List<int>(AsLazyTrackable(9), MakeLazyTrackable(() => fList2));
 
             var list = MakeLazyTrackable(() => fList1);
             var en = list.AsEnumerable().GetEnumerator();
@@ -107,14 +107,14 @@ namespace LazySharp.Tests {
         }
         [Test]
         public void Take_NullArgs() {
-            Assert.Throws<ArgumentNullException>(() => LList.Take((L<LList<int>>)null, L<int>.Default));
-            Assert.Throws<ArgumentNullException>(() => LList.Take(LList<int>.Null, null));
+            Assert.Throws<ArgumentNullException>(() => LList.Take((L<List<int>>)null, L<int>.Default));
+            Assert.Throws<ArgumentNullException>(() => LList.Take(List<int>.Null, null));
         }
         [Test]
         public void Take_LazyEvaluation() {
-            Func<LList<string>> fList3 = () => new LList<string>(AsLazyTrackable("3"), LList<string>.Null);
-            Func<LList<string>> fList2 = () => new LList<string>(AsLazyTrackable("2"), MakeLazyTrackable(() => fList3));
-            Func<LList<string>> fList1 = () => new LList<string>(AsLazyTrackable("1"), MakeLazyTrackable(() => fList2));
+            Func<List<string>> fList3 = () => new List<string>(AsLazyTrackable("3"), List<string>.Null);
+            Func<List<string>> fList2 = () => new List<string>(AsLazyTrackable("2"), MakeLazyTrackable(() => fList3));
+            Func<List<string>> fList1 = () => new List<string>(AsLazyTrackable("1"), MakeLazyTrackable(() => fList2));
 
             var first = MakeLazyTrackable(() => fList1).Take(AsLazyTrackable(2));
             base.AssertTracks();
@@ -136,8 +136,8 @@ namespace LazySharp.Tests {
         }
         [Test]
         public void Take_LazyEvaluation_ShortList() {
-            Func<LList<string>> fList2 = () => new LList<string>(AsLazyTrackable("2"), LList<string>.Null);
-            Func<LList<string>> fList1 = () => new LList<string>(AsLazyTrackable("1"), MakeLazyTrackable(() => fList2));
+            Func<List<string>> fList2 = () => new List<string>(AsLazyTrackable("2"), List<string>.Null);
+            Func<List<string>> fList1 = () => new List<string>(AsLazyTrackable("1"), MakeLazyTrackable(() => fList2));
 
             var first = MakeLazyTrackable(() => fList1).Take(AsLazyTrackable(3));
             base.AssertTracks();

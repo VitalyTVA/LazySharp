@@ -26,9 +26,9 @@ namespace LazySharp {
             return new L<bool>(() => object.Equals(left.Value(), right.Value()));
         }
 
-        public static System.Collections.Generic.IEnumerable<T> AsEnumerable<T>(this L<LList<T>> list) {
+        public static System.Collections.Generic.IEnumerable<T> AsEnumerable<T>(this L<List<T>> list) {
             list.NotNull();
-            LList<T> listValue = null;
+            List<T> listValue = null;
             while((listValue = list.Value()) != null) {
                 yield return listValue.Head.Value();
                 list = listValue.Tail;
