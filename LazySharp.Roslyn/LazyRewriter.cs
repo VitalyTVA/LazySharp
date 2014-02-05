@@ -32,20 +32,27 @@ namespace LazySharp.Roslyn {
             return base.VisitConstructorDeclaration(node);
         }
         public override SyntaxNode VisitFieldDeclaration(FieldDeclarationSyntax node) {
-            var varieables = node.Declaration.Variables
-                .Select(x => {
-                    var newExpression = Syntax.ObjectCreationExpression(WrapType(node.Declaration.Type, false).WithLeadingTrivia(Syntax.Whitespace(" ")))
-                        .WithArgumentList(Syntax.ArgumentList(Syntax.SeparatedList(Syntax.Argument(x.Initializer.Value))));
-                    return x.WithInitializer(Syntax.EqualsValueClause(newExpression.WithLeadingTrivia(Syntax.Whitespace(" "))));
-                });
-            var variableDeclaration = Syntax.VariableDeclaration(WrapType(node.Declaration.Type))
-                .AddVariables(varieables.ToArray());
-            node = node.WithDeclaration(variableDeclaration);
+            node = FieldRewriter.RewriteFieldDeclaration(node, LazyTypeName);
             return base.VisitFieldDeclaration(node);
         }
         static TypeSyntax WrapType(TypeSyntax type, bool keepTrailingTrivia = true) {
             return TypeRewriter.WrapType(type, LazyTypeName, keepTrailingTrivia);
         }
+    }
+    static class FieldRewriter {
+        public static FieldDeclarationSyntax RewriteFieldDeclaration(FieldDeclarationSyntax node, string wrapperClassName) {
+            var varieables = node.Declaration.Variables
+                .Select(x => {
+                    var newExpression = Syntax.ObjectCreationExpression(TypeRewriter.WrapType(node.Declaration.Type, wrapperClassName, false).WithLeadingTrivia(Syntax.Whitespace(" ")))
+                        .WithArgumentList(Syntax.ArgumentList(Syntax.SeparatedList(Syntax.Argument(x.Initializer.Value))));
+                    return x.WithInitializer(Syntax.EqualsValueClause(newExpression.WithLeadingTrivia(Syntax.Whitespace(" "))));
+                });
+            var variableDeclaration = Syntax.VariableDeclaration(TypeRewriter.WrapType(node.Declaration.Type, wrapperClassName))
+                .AddVariables(varieables.ToArray());
+            node = node.WithDeclaration(variableDeclaration);
+            return node;
+        }
+
     }
     static class BodyRewriter {
         public static BlockSyntax RewriteBody(BaseMethodDeclarationSyntax node) {
