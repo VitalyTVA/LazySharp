@@ -33,8 +33,8 @@ namespace LazySharp.Roslyn.Tests {
                 @"public static readonly List<T> Null = default(List<T>);"
             );
             AssertRewritedField(
-                @"public static readonly L<int> a = new L<int>(5 + 7),b = new L<int>(3 + (1 + 2));",
-                @"public static readonly int a = 5 + 7, b = 3 + (1 + 2);"
+                @"private L<int> a = new L<int>(5 + 7),b = new L<int>(3 + (1 + 2));",
+                @"private int a = 5 + 7, b = 3 + (1 + 2);"
             );
         }
         void AssertRewritedField(string expected, string original) {
