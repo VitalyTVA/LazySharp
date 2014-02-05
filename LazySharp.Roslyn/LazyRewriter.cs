@@ -26,8 +26,33 @@ namespace LazySharp.Roslyn {
         public override SyntaxNode VisitPropertyDeclaration(PropertyDeclarationSyntax node) {
             return node.WithType(TypeRewriter.WrapType(node.Type, "L"));
         }
+        public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node) {
+            node = node.WithBody(BodyRewriter.RewriteBody(node));
+            return base.VisitConstructorDeclaration(node);
+        }
     }
-
+    static class BodyRewriter {
+        public static BlockSyntax RewriteBody(BaseMethodDeclarationSyntax node) {
+#if ROSLYN_NEW
+            const SyntaxKind simpleMemberAccessExpression = SyntaxKind.SimpleMemberAccessExpression;
+#else
+            const SyntaxKind simpleMemberAccessExpression = SyntaxKind.MemberAccessExpression;
+#endif
+            var leadingTrivia = node.Body.Statements.First().GetLeadingTrivia();
+            var nullChecks = node.ParameterList.Parameters
+                .Select(x => x.Identifier.ValueText)
+                .Select(x => {
+                    var memberAccessExpression = Syntax.MemberAccessExpression(simpleMemberAccessExpression, Syntax.IdentifierName(x), Syntax.IdentifierName("NotNull"));
+                    return Syntax.ExpressionStatement(Syntax.InvocationExpression(memberAccessExpression))
+                        .WithLeadingTrivia(leadingTrivia)
+                        .WithTrailingTrivia(Syntax.Whitespace("\r\n"));
+                });
+            var newBlock = node.Body.Update(node.Body.OpenBraceToken, node.Body.Statements.Insert(0, nullChecks.ToArray()), node.Body.CloseBraceToken)
+                .WithLeadingTrivia(node.Body.GetLeadingTrivia())
+                .WithTrailingTrivia(node.Body.GetTrailingTrivia());
+            return newBlock;
+        }
+    }
     class NamespaceRewriter : SyntaxRewriter {
         public static NamespaceDeclarationSyntax RewriteNamespace(NamespaceDeclarationSyntax node, string from, string to) {
             var newName = (NameSyntax)new NamespaceRewriter(from, to).Visit(node.Name);
@@ -49,7 +74,7 @@ namespace LazySharp.Roslyn {
             return node;
         }
     }
-    class TypeRewriter : SyntaxRewriter {
+    static class TypeRewriter {
         public static TypeSyntax WrapType(TypeSyntax type, string wrapperClassName) {
             var trails = type.GetTrailingTrivia();
             var leads = type.GetLeadingTrivia();

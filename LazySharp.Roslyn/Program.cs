@@ -20,7 +20,7 @@ namespace LazySharp.Roslyn {
     class Program {
         static string path = @"..\..\";
         static void Main(string[] args) {
-            if(Directory.GetCurrentDirectory().EndsWith("Roslyn"))
+            if(Directory.GetCurrentDirectory().EndsWith("Roslyn") || Directory.GetCurrentDirectory().EndsWith("Roslyn_new"))
                 path += @"..\";
 
             const string prototypesDllName = "LazySharp.Prototypes.dll";
