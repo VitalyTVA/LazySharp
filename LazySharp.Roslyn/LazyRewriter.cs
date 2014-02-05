@@ -17,18 +17,34 @@ using Roslyn.Services.CSharp;
 
 namespace LazySharp.Roslyn {
     class LazyRewriter : SyntaxRewriter {
+        const string LazyTypeName = "L";
         public override SyntaxNode VisitNamespaceDeclaration(NamespaceDeclarationSyntax node) {
             return base.VisitNamespaceDeclaration(NamespaceRewriter.RewriteNamespace(node, "Prototypes", "Generated"));
         }
         public override SyntaxNode VisitParameter(ParameterSyntax node) {
-            return node.WithType(TypeRewriter.WrapType(node.Type, "L"));
+            return node.WithType(WrapType(node.Type));
         }
         public override SyntaxNode VisitPropertyDeclaration(PropertyDeclarationSyntax node) {
-            return node.WithType(TypeRewriter.WrapType(node.Type, "L"));
+            return node.WithType(WrapType(node.Type));
         }
         public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node) {
             node = node.WithBody(BodyRewriter.RewriteBody(node));
             return base.VisitConstructorDeclaration(node);
+        }
+        public override SyntaxNode VisitFieldDeclaration(FieldDeclarationSyntax node) {
+            var varieables = node.Declaration.Variables
+                .Select(x => {
+                    var newExpression = Syntax.ObjectCreationExpression(WrapType(node.Declaration.Type, false).WithLeadingTrivia(Syntax.Whitespace(" ")))
+                        .WithArgumentList(Syntax.ArgumentList(Syntax.SeparatedList(Syntax.Argument(x.Initializer.Value))));
+                    return x.WithInitializer(Syntax.EqualsValueClause(newExpression.WithLeadingTrivia(Syntax.Whitespace(" "))));
+                });
+            var variableDeclaration = Syntax.VariableDeclaration(WrapType(node.Declaration.Type))
+                .AddVariables(varieables.ToArray());
+            node = node.WithDeclaration(variableDeclaration);
+            return base.VisitFieldDeclaration(node);
+        }
+        static TypeSyntax WrapType(TypeSyntax type, bool keepTrailingTrivia = true) {
+            return TypeRewriter.WrapType(type, LazyTypeName, keepTrailingTrivia);
         }
     }
     static class BodyRewriter {
@@ -75,14 +91,16 @@ namespace LazySharp.Roslyn {
         }
     }
     static class TypeRewriter {
-        public static TypeSyntax WrapType(TypeSyntax type, string wrapperClassName) {
+        public static TypeSyntax WrapType(TypeSyntax type, string wrapperClassName, bool keepTrailingTrivia = true) {
             var trails = type.GetTrailingTrivia();
             var leads = type.GetLeadingTrivia();
             var clearType = type.ReplaceTrivia(leads.Concat(trails), (_, __) => SyntaxTriviaList.Empty);
-            return Syntax.GenericName(wrapperClassName)
+            var result = Syntax.GenericName(wrapperClassName)
                 .AddTypeArgumentListArguments(clearType)
-                .WithTrailingTrivia(trails)
                 .WithLeadingTrivia(leads);
+            if(keepTrailingTrivia)
+                result = result.WithTrailingTrivia(trails);
+            return result;
         }
     }
 }
