@@ -20,9 +20,29 @@ namespace LazySharp.Roslyn.Tests {
     [TestFixture]
     public class LazyRewriterTests {
         #region property
+        class TestParameterRewriter : SyntaxRewriter {
+            public override SyntaxNode VisitParameter(ParameterSyntax node) {
+                return node.WithType(TypeRewriter.WrapType(node.Type, "X"));
+            }
+        }
+        [Test]
+        public void RewriteParamter() {
+            AssertRewritedParameters("public int Method(X<int> a, X<List<int>> b) { }", "public int Method(int a, List<int> b) { }");
+        }
+        void AssertRewritedParameters(string expected, string original) {
+            string context = @"using System; namespace Sample.From {{ 
+    class Test {{
+        {0}
+    }}
+}}";
+            AssertRewrited(expected, original, new TestParameterRewriter(), context);
+        }
+        #endregion
+
+        #region property
         class TestPropertyRewriter : SyntaxRewriter {
             public override SyntaxNode VisitPropertyDeclaration(PropertyDeclarationSyntax node) {
-                return base.VisitPropertyDeclaration(TypeRewriter.RewritePropertyType(node, "X"));
+                return node.WithType(TypeRewriter.WrapType(node.Type, "X"));
             }
         }
         [Test]

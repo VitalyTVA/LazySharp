@@ -50,9 +50,6 @@ namespace LazySharp.Roslyn {
         }
     }
     class TypeRewriter : SyntaxRewriter {
-        public static PropertyDeclarationSyntax RewritePropertyType(PropertyDeclarationSyntax node, string wrapperClassName) {
-            return node.WithType(WrapType(node.Type, wrapperClassName));
-        }
         public static TypeSyntax WrapType(TypeSyntax type, string wrapperClassName) {
             var trails = type.GetTrailingTrivia();
             var leads = type.GetLeadingTrivia();
