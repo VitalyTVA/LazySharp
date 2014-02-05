@@ -19,6 +19,37 @@ using Roslyn.Services.CSharp;
 namespace LazySharp.Roslyn.Tests {
     [TestFixture]
     public class LazyRewriterTests {
+        #region null checks
+        class AddNullChecksRewriter : SyntaxRewriter {
+            public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node) {
+                node = node.WithBody(BodyRewriter.RewriteBody(node));
+                return base.VisitConstructorDeclaration(node);
+            }
+        }
+        [Test]
+        public void AddNullChecks() {
+            AssertNullChecks(
+@"        public Test(T head, List<T> tail) {
+            head.NotNull();
+            tail.NotNull();
+            Head = head;
+            Tail = tail;
+        }",
+@"        public Test(T head, List<T> tail) {
+            Head = head;
+            Tail = tail;
+        }");
+        }
+        void AssertNullChecks(string expected, string original) {
+            string context = @"using System; namespace Sample.From {{ 
+    class Test {{
+        {0}
+    }}
+}}";
+            AssertRewrited(expected, original, new AddNullChecksRewriter(), context);
+        }       
+        #endregion
+
         #region property
         class TestParameterRewriter : SyntaxRewriter {
             public override SyntaxNode VisitParameter(ParameterSyntax node) {
