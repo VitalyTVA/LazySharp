@@ -1,3 +1,4 @@
+using LazySharp.Generated;
 using LazySharp.Utils;
 using System;
 using System.Linq;
