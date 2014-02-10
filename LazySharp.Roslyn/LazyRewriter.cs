@@ -48,7 +48,7 @@ namespace LazySharp.Roslyn {
         public static FieldDeclarationSyntax RewriteFieldDeclaration(FieldDeclarationSyntax node, string wrapperClassName) {
             var variables = node.Declaration.Variables
                 .Select(x => {
-                    var argList = Syntax.ArgumentList(Syntax.SeparatedList(new[] { Syntax.Argument(x.Initializer.Value) }));
+                    var argList = Syntax.ArgumentList(Syntax.SeparatedList(new[] { Syntax.Argument(x.Initializer.Value) }, Enumerable.Empty<SyntaxToken>()));
                     var newExpression = Syntax.ObjectCreationExpression(TypeRewriter.WrapType(node.Declaration.Type, wrapperClassName, false).WithLeadingTrivia(Syntax.Whitespace(" ")))
                         .WithArgumentList(argList)
                         .WithLeadingTrivia(Syntax.Whitespace(" "));
@@ -117,4 +117,14 @@ namespace LazySharp.Roslyn {
             return result;
         }
     }
+#if !ROSLYN_NEW
+    public static class Compatibility {
+        public static SyntaxList<StatementSyntax> InsertRange(this SyntaxList<StatementSyntax> list, int index, StatementSyntax[] expressions) {
+            return list.Insert(index, expressions);
+        }
+        public static Compilation WithAssemblyName(this Compilation compilation, string outputName) {
+            return (Compilation)compilation.UpdateOutputName(outputName);
+        }
+    }
+#endif
 }

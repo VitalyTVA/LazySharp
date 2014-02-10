@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Syntax = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using SyntaxRewriter = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxRewriter;
+using SyntaxTree = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree;
 #else
 using Roslyn.Compilers;
 using Roslyn.Compilers.CSharp;
@@ -186,7 +187,7 @@ x.NotNull();
                 expected = string.Format(context, expected);
                 original = string.Format(context, original);
             }
-            var tree = CSharpSyntaxTree.ParseText(original);
+            var tree = SyntaxTree.ParseText(original);
             var rewritten = rewriter.Visit(tree.GetRoot());
             Assert.AreEqual(expected, rewritten.GetText().ToString());
         }

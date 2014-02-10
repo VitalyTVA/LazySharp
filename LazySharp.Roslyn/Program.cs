@@ -10,12 +10,15 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Syntax = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using Compilation = Microsoft.CodeAnalysis.CSharp.CSharpCompilation;
 using CompilationOptions = Microsoft.CodeAnalysis.CSharp.CSharpCompilationOptions;
+using SyntaxTree = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree;
+using SyntaxTreeBase = Microsoft.CodeAnalysis.SyntaxTree;
 #else
 using Roslyn.Compilers;
 using Roslyn.Compilers.CSharp;
 using Roslyn.Services;
 using Roslyn.Services.CSharp;
 using Roslyn.Compilers.Common;
+using SyntaxTreeBase = Roslyn.Compilers.CSharp.SyntaxTree;
 #endif
 
 namespace LazySharp.Roslyn {
@@ -28,8 +31,8 @@ namespace LazySharp.Roslyn {
             const string prototypesDllName = "LazySharp.Prototypes.dll";
             const string generatedDllName = "LazySharp.Generated.dll";
 
-            SyntaxTree listGenericTree = GetTree(@"Prototypes\List.Generic");
-            SyntaxTree listTree = GetTree(@"Prototypes\List");
+            var listGenericTree = GetTree(@"Prototypes\List.Generic");
+            var listTree = GetTree(@"Prototypes\List");
 
             Compilation prototypesCompilation = Compilation.Create(prototypesDllName)
                                         .AddReferences(
@@ -44,8 +47,8 @@ namespace LazySharp.Roslyn {
                                         );
             EmitAndLog(prototypesCompilation, prototypesDllName);
 
-            SyntaxTree listGenericTreeModifed = GenerateFile(listGenericTree, @"Generated\List.Generic");
-            SyntaxTree listTreeModifed = GenerateFile(listTree, @"Generated\List");
+            var listGenericTreeModifed = GenerateFile(listGenericTree, @"Generated\List.Generic");
+            var listTreeModifed = GenerateFile(listTree, @"Generated\List");
 
             Compilation generatedCompilation = prototypesCompilation
                 .AddSyntaxTrees(listGenericTreeModifed)
@@ -68,16 +71,16 @@ namespace LazySharp.Roslyn {
             }
             return result.Success;
         }
-        static SyntaxTree GenerateFile(SyntaxTree orginal, string fileName) {
+        static SyntaxTreeBase GenerateFile(SyntaxTreeBase orginal, string fileName) {
             string newFileName = GetFilePath(fileName);
             string newText = new LazyRewriter().Visit(orginal.GetRoot()).GetText().ToString();
             string oldText = File.Exists(newFileName) ? File.ReadAllText(newFileName) : null;
             if(newText != oldText)
                 File.WriteAllText(newFileName, newText);
-            return CSharpSyntaxTree.ParseFile(newFileName);
+            return SyntaxTree.ParseFile(newFileName);
         }
-        static SyntaxTree GetTree(string fileName) {
-            return CSharpSyntaxTree.ParseFile(GetFilePath(fileName));
+        static SyntaxTreeBase GetTree(string fileName) {
+            return SyntaxTree.ParseFile(GetFilePath(fileName));
         }
         static string GetFilePath(string fileName) {
             return Path.Combine(path, fileName + ".cs");
