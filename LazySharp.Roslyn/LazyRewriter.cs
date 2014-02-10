@@ -29,11 +29,13 @@ namespace LazySharp.Roslyn {
             return node.WithType(WrapType(node.Type));
         }
         public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node) {
-            node = node.WithBody(BodyRewriter.RewriteBody(node));
+            node = node.WithBody(NullCheckAdder.AddNullChecks(node));
             return base.VisitConstructorDeclaration(node);
         }
         public override SyntaxNode VisitMethodDeclaration(MethodDeclarationSyntax node) {
-            node = node.WithBody(BodyRewriter.RewriteBody(node));
+            node = node
+                .WithBody(NullCheckAdder.AddNullChecks(node))
+                .WithReturnType(WrapType(node.ReturnType));
             return base.VisitMethodDeclaration(node);
         }
         public override SyntaxNode VisitFieldDeclaration(FieldDeclarationSyntax node) {
@@ -61,8 +63,8 @@ namespace LazySharp.Roslyn {
         }
 
     }
-    static class BodyRewriter {
-        public static BlockSyntax RewriteBody(BaseMethodDeclarationSyntax node) {
+    static class NullCheckAdder {
+        public static BlockSyntax AddNullChecks(BaseMethodDeclarationSyntax node) {
 #if ROSLYN_NEW
             const SyntaxKind simpleMemberAccessExpression = SyntaxKind.SimpleMemberAccessExpression;
 #else

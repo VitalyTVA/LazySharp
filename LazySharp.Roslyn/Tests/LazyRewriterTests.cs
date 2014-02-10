@@ -52,7 +52,7 @@ namespace LazySharp.Roslyn.Tests {
         #region null checks
         class AddNullChecksRewriter : SyntaxRewriter {
             public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node) {
-                node = node.WithBody(BodyRewriter.RewriteBody(node));
+                node = node.WithBody(NullCheckAdder.AddNullChecks(node));
                 return base.VisitConstructorDeclaration(node);
             }
         }
