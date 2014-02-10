@@ -33,6 +33,12 @@ namespace LazySharp.Roslyn {
             return base.VisitConstructorDeclaration(node);
         }
         public override SyntaxNode VisitMethodDeclaration(MethodDeclarationSyntax node) {
+            var block = Syntax.Block(node.Body.Statements);
+            var lambda = Syntax.ParenthesizedLambdaExpression(Syntax.ParameterList(), block);
+            var newExpression = FieldRewriter.CreateNewLazyExpression(node.ReturnType, LazyTypeName, lambda);
+            var returnExpression = Syntax.ReturnStatement(newExpression);
+            var statements = Syntax.List<StatementSyntax>(new [] { returnExpression });
+            node = node.WithBody(node.Body.WithStatements(statements));
             node = node
                 .WithBody(NullCheckAdder.AddNullChecks(node))
                 .WithReturnType(WrapType(node.ReturnType));
@@ -50,16 +56,21 @@ namespace LazySharp.Roslyn {
         public static FieldDeclarationSyntax RewriteFieldDeclaration(FieldDeclarationSyntax node, string wrapperClassName) {
             var variables = node.Declaration.Variables
                 .Select(x => {
-                    var argList = Syntax.ArgumentList(Syntax.SeparatedList(new[] { Syntax.Argument(x.Initializer.Value) }, Enumerable.Empty<SyntaxToken>()));
-                    var newExpression = Syntax.ObjectCreationExpression(TypeRewriter.WrapType(node.Declaration.Type, wrapperClassName, false).WithLeadingTrivia(Syntax.Whitespace(" ")))
-                        .WithArgumentList(argList)
-                        .WithLeadingTrivia(Syntax.Whitespace(" "));
+                    var newExpression = CreateNewLazyExpression(node.Declaration.Type, wrapperClassName, x.Initializer.Value);
                     return x.WithInitializer(Syntax.EqualsValueClause(newExpression));
                 });
             var variableDeclaration = Syntax.VariableDeclaration(TypeRewriter.WrapType(node.Declaration.Type, wrapperClassName))
                 .AddVariables(variables.ToArray());
             node = node.WithDeclaration(variableDeclaration);
             return node;
+        }
+
+        public static ObjectCreationExpressionSyntax CreateNewLazyExpression(TypeSyntax type, string wrapperClassName, ExpressionSyntax expression) {
+            var argList = Syntax.ArgumentList(Syntax.SeparatedList(new[] { Syntax.Argument(expression) }, Enumerable.Empty<SyntaxToken>()));
+            var newExpression = Syntax.ObjectCreationExpression(TypeRewriter.WrapType(type, wrapperClassName, false).WithLeadingTrivia(Syntax.Whitespace(" ")))
+                .WithArgumentList(argList)
+                .WithLeadingTrivia(Syntax.Whitespace(" "));
+            return newExpression;
         }
 
     }
