@@ -2,21 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-
-#if ROSLYN_NEW
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Syntax = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using Compilation = Microsoft.CodeAnalysis.CSharp.CSharpCompilation;
 using CompilationOptions = Microsoft.CodeAnalysis.CSharp.CSharpCompilationOptions;
-#else
-using Roslyn.Compilers;
-using Roslyn.Compilers.CSharp;
-using Roslyn.Services;
-using Roslyn.Services.CSharp;
-using Roslyn.Compilers.Common;
-#endif
 
 namespace LazySharp.Roslyn {
     class Program {
