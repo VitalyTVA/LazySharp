@@ -7,7 +7,7 @@ namespace LazySharp {
         public static L<List<int>> Infinite(L<int> start) {
             start.NotNull();
             return new L<List<int>>(() => {
-                return new List<int>(start, Infinite(start.Inc()));
+                return new List<int>(start, Infinite(new L<int>(() => start.Value() + 1)));
             });
         }
         public static L<List<int>> Range(L<int> start, L<int> count) {

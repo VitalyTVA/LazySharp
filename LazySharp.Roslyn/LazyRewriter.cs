@@ -24,6 +24,10 @@ namespace LazySharp.Roslyn {
             node = node.WithBody(BodyRewriter.RewriteBody(node));
             return base.VisitConstructorDeclaration(node);
         }
+        public override SyntaxNode VisitMethodDeclaration(MethodDeclarationSyntax node) {
+            node = node.WithBody(BodyRewriter.RewriteBody(node));
+            return base.VisitMethodDeclaration(node);
+        }
         public override SyntaxNode VisitFieldDeclaration(FieldDeclarationSyntax node) {
             node = FieldRewriter.RewriteFieldDeclaration(node, LazyTypeName);
             return base.VisitFieldDeclaration(node);
@@ -51,7 +55,7 @@ namespace LazySharp.Roslyn {
     }
     static class BodyRewriter {
         public static BlockSyntax RewriteBody(BaseMethodDeclarationSyntax node) {
-            var leadingTrivia = node.Body.Statements.First().GetLeadingTrivia();
+            var leadingTrivia = (IEnumerable<SyntaxTrivia>)node.Body.Statements.Select(x => x.GetLeadingTrivia()).FirstOrDefault() ?? new [] { Syntax.Whitespace(string.Empty) };
             var nullChecks = node.ParameterList.Parameters
                 .Select(x => x.Identifier.ValueText)
                 .Select(x => {

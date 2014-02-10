@@ -1,9 +1,10 @@
 using System;
 using LazySharp.Utils;
 
-namespace LazySharp.Prototypes {
+namespace LazySharp.Generated {
     public static class List {
-        public static void Infinite(int start) {
+        public static void Infinite(L<int> start) {
+start.NotNull();
             //return new List<int>(start, Infinite(start + 1));
         }
         //public static List<int> Range(int start, int count) {

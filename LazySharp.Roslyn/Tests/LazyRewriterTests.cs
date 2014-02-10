@@ -56,11 +56,18 @@ namespace LazySharp.Roslyn.Tests {
             tail.NotNull();
             Head = head;
             Tail = tail;
-        }",
+        }
+        public Test(int x) { 
+x.NotNull();
+        }
+",
 @"        public Test(T head, List<T> tail) {
             Head = head;
             Tail = tail;
-        }");
+        }
+        public Test(int x) { 
+        }
+");
         }
         void AssertNullChecks(string expected, string original) {
             string context = @"using System; namespace Sample.From {{ 

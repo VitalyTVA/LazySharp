@@ -20,6 +20,7 @@ namespace LazySharp.Roslyn {
             const string generatedDllName = "LazySharp.Generated.dll";
 
             SyntaxTree listGenericTree = GetTree(@"Prototypes\List.Generic");
+            SyntaxTree listTree = GetTree(@"Prototypes\List");
 
             Compilation prototypesCompilation = Compilation.Create(prototypesDllName)
                                         .AddReferences(
@@ -30,13 +31,17 @@ namespace LazySharp.Roslyn {
                                             GetTree(@"Utils\Argument"),
                                             GetTree(@"L"),
                                             listGenericTree,
-                                            GetTree(@"Prototypes\List")
+                                            listTree
                                         );
             EmitAndLog(prototypesCompilation, prototypesDllName);
 
             SyntaxTree listGenericTreeModifed = GenerateFile(listGenericTree, @"Generated\List.Generic");
+            SyntaxTree listTreeModifed = GenerateFile(listTree, @"Generated\List");
 
-            Compilation generatedCompilation = prototypesCompilation.AddSyntaxTrees(listGenericTreeModifed).WithAssemblyName(generatedDllName);
+            Compilation generatedCompilation = prototypesCompilation
+                .AddSyntaxTrees(listGenericTreeModifed)
+                .AddSyntaxTrees(listTreeModifed)
+                .WithAssemblyName(generatedDllName);
             EmitAndLog(generatedCompilation, generatedDllName);
         }
         static bool EmitAndLog(Compilation compilation, string dllName) {
