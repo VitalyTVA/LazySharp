@@ -3,9 +3,9 @@ using LazySharp.Utils;
 
 namespace LazySharp.Generated {
     public static class List {
-        public static void Infinite(L<int> start) {
-start.NotNull();
-            //return new List<int>(start, Infinite(start + 1));
+        public static List<int> Infinite(L<int> start) {
+            start.NotNull();
+            return null;
         }
         //public static List<int> Range(int start, int count) {
         //    return count > 0 ?

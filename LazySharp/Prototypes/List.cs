@@ -3,8 +3,8 @@ using LazySharp.Utils;
 
 namespace LazySharp.Prototypes {
     public static class List {
-        public static void Infinite(int start) {
-            //return new List<int>(start, Infinite(start + 1));
+        public static List<int> Infinite(int start) {
+            return null;
         }
         //public static List<int> Range(int start, int count) {
         //    return count > 0 ?
