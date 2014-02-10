@@ -2,11 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+
+#if ROSLYN_NEW
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Syntax = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using SyntaxRewriter = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxRewriter;
+#else
+using Roslyn.Compilers;
+using Roslyn.Compilers.CSharp;
+using Roslyn.Services;
+using Roslyn.Services.CSharp;
+#endif
 
 namespace LazySharp.Roslyn {
     class LazyRewriter : SyntaxRewriter {
@@ -55,11 +63,16 @@ namespace LazySharp.Roslyn {
     }
     static class BodyRewriter {
         public static BlockSyntax RewriteBody(BaseMethodDeclarationSyntax node) {
+#if ROSLYN_NEW
+            const SyntaxKind simpleMemberAccessExpression = SyntaxKind.SimpleMemberAccessExpression;
+#else
+            const SyntaxKind simpleMemberAccessExpression = SyntaxKind.MemberAccessExpression;
+#endif
             var leadingTrivia = (IEnumerable<SyntaxTrivia>)node.Body.Statements.Select(x => x.GetLeadingTrivia()).FirstOrDefault() ?? new [] { Syntax.Whitespace(string.Empty) };
             var nullChecks = node.ParameterList.Parameters
                 .Select(x => x.Identifier.ValueText)
                 .Select(x => {
-                    var memberAccessExpression = Syntax.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Syntax.IdentifierName(x), Syntax.IdentifierName("NotNull"));
+                    var memberAccessExpression = Syntax.MemberAccessExpression(simpleMemberAccessExpression, Syntax.IdentifierName(x), Syntax.IdentifierName("NotNull"));
                     return Syntax.ExpressionStatement(Syntax.InvocationExpression(memberAccessExpression))
                         .WithLeadingTrivia(leadingTrivia)
                         .WithTrailingTrivia(Syntax.Whitespace("\r\n"));

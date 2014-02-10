@@ -5,8 +5,11 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LazySharp.Roslyn", "LazySharp.Roslyn\LazySharp.Roslyn.csproj", "{D70EE6ED-5060-4C78-AD04-3E5D76225ED2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LazySharp.Roslyn.New", "LazySharp.Roslyn\LazySharp.Roslyn.New.csproj", "{C425C092-2E32-4AC8-8DF5-A09E88309EC9}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LazySharp", "LazySharp\LazySharp.csproj", "{3EFA2D8E-1AFE-4C6E-A492-E111F19799A9}"
 	ProjectSection(ProjectDependencies) = postProject
+		{C425C092-2E32-4AC8-8DF5-A09E88309EC9} = {C425C092-2E32-4AC8-8DF5-A09E88309EC9}
 		{D70EE6ED-5060-4C78-AD04-3E5D76225ED2} = {D70EE6ED-5060-4C78-AD04-3E5D76225ED2}
 	EndProjectSection
 EndProject
@@ -30,6 +33,16 @@ Global
 		{D70EE6ED-5060-4C78-AD04-3E5D76225ED2}.Release|Mixed Platforms.Build.0 = Release|x86
 		{D70EE6ED-5060-4C78-AD04-3E5D76225ED2}.Release|x86.ActiveCfg = Release|x86
 		{D70EE6ED-5060-4C78-AD04-3E5D76225ED2}.Release|x86.Build.0 = Release|x86
+		{C425C092-2E32-4AC8-8DF5-A09E88309EC9}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{C425C092-2E32-4AC8-8DF5-A09E88309EC9}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{C425C092-2E32-4AC8-8DF5-A09E88309EC9}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{C425C092-2E32-4AC8-8DF5-A09E88309EC9}.Debug|x86.ActiveCfg = Debug|x86
+		{C425C092-2E32-4AC8-8DF5-A09E88309EC9}.Debug|x86.Build.0 = Debug|x86
+		{C425C092-2E32-4AC8-8DF5-A09E88309EC9}.Release|Any CPU.ActiveCfg = Release|x86
+		{C425C092-2E32-4AC8-8DF5-A09E88309EC9}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{C425C092-2E32-4AC8-8DF5-A09E88309EC9}.Release|Mixed Platforms.Build.0 = Release|x86
+		{C425C092-2E32-4AC8-8DF5-A09E88309EC9}.Release|x86.ActiveCfg = Release|x86
+		{C425C092-2E32-4AC8-8DF5-A09E88309EC9}.Release|x86.Build.0 = Release|x86
 		{3EFA2D8E-1AFE-4C6E-A492-E111F19799A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3EFA2D8E-1AFE-4C6E-A492-E111F19799A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EFA2D8E-1AFE-4C6E-A492-E111F19799A9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

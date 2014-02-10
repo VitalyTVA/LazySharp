@@ -3,12 +3,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+
+#if ROSLYN_NEW
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Syntax = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using SyntaxRewriter = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxRewriter;
-
+#else
+using Roslyn.Compilers;
+using Roslyn.Compilers.CSharp;
+using Roslyn.Services;
+using Roslyn.Services.CSharp;
+#endif
 
 namespace LazySharp.Roslyn.Tests {
     [TestFixture]
