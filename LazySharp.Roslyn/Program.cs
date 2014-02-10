@@ -8,6 +8,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Syntax = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using Compilation = Microsoft.CodeAnalysis.CSharp.CSharpCompilation;
+using CompilationOptions = Microsoft.CodeAnalysis.CSharp.CSharpCompilationOptions;
 #else
 using Roslyn.Compilers;
 using Roslyn.Compilers.CSharp;
@@ -24,9 +26,7 @@ namespace LazySharp.Roslyn {
                 path += @"..\";
 
             const string prototypesDllName = "LazySharp.Prototypes.dll";
-            #if !ROSLYN_NEW
             const string generatedDllName = "LazySharp.Generated.dll";
-            #endif
 
             SyntaxTree listGenericTree = GetTree(@"Prototypes\List.Generic");
 
@@ -45,10 +45,8 @@ namespace LazySharp.Roslyn {
 
             SyntaxTree listGenericTreeModifed = GenerateFile(listGenericTree, @"Generated\List.Generic");
 
-            #if !ROSLYN_NEW
-            Compilation generatedCompilation = (Compilation)prototypesCompilation.AddSyntaxTrees(listGenericTreeModifed).UpdateOutputName(generatedDllName);
+            Compilation generatedCompilation = prototypesCompilation.AddSyntaxTrees(listGenericTreeModifed).WithAssemblyName(generatedDllName);
             EmitAndLog(generatedCompilation, generatedDllName);
-            #endif
         }
         static bool EmitAndLog(Compilation compilation, string dllName) {
             var result = compilation.Emit(dllName);
@@ -71,10 +69,10 @@ namespace LazySharp.Roslyn {
             string oldText = File.Exists(newFileName) ? File.ReadAllText(newFileName) : null;
             if(newText != oldText)
                 File.WriteAllText(newFileName, newText);
-            return SyntaxTree.ParseFile(newFileName);
+            return CSharpSyntaxTree.ParseFile(newFileName);
         }
         static SyntaxTree GetTree(string fileName) {
-            return SyntaxTree.ParseFile(GetFilePath(fileName));
+            return CSharpSyntaxTree.ParseFile(GetFilePath(fileName));
         }
         static string GetFilePath(string fileName) {
             return Path.Combine(path, fileName + ".cs");

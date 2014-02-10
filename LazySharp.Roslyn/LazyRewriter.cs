@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Syntax = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using SyntaxRewriter = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxRewriter;
 #else
 using Roslyn.Compilers;
 using Roslyn.Compilers.CSharp;
@@ -43,8 +44,9 @@ namespace LazySharp.Roslyn {
         public static FieldDeclarationSyntax RewriteFieldDeclaration(FieldDeclarationSyntax node, string wrapperClassName) {
             var variables = node.Declaration.Variables
                 .Select(x => {
+                    var argList = Syntax.ArgumentList(Syntax.SeparatedList(new[] { Syntax.Argument(x.Initializer.Value) }));
                     var newExpression = Syntax.ObjectCreationExpression(TypeRewriter.WrapType(node.Declaration.Type, wrapperClassName, false).WithLeadingTrivia(Syntax.Whitespace(" ")))
-                        .WithArgumentList(Syntax.ArgumentList(Syntax.SeparatedList(Syntax.Argument(x.Initializer.Value))))
+                        .WithArgumentList(argList)
                         .WithLeadingTrivia(Syntax.Whitespace(" "));
                     return x.WithInitializer(Syntax.EqualsValueClause(newExpression));
                 });
@@ -71,7 +73,7 @@ namespace LazySharp.Roslyn {
                         .WithLeadingTrivia(leadingTrivia)
                         .WithTrailingTrivia(Syntax.Whitespace("\r\n"));
                 });
-            var newBlock = node.Body.Update(node.Body.OpenBraceToken, node.Body.Statements.Insert(0, nullChecks.ToArray()), node.Body.CloseBraceToken)
+            var newBlock = node.Body.Update(node.Body.OpenBraceToken, node.Body.Statements.InsertRange(0, nullChecks.ToArray()), node.Body.CloseBraceToken)
                 .WithLeadingTrivia(node.Body.GetLeadingTrivia())
                 .WithTrailingTrivia(node.Body.GetTrailingTrivia());
             return newBlock;
@@ -102,7 +104,7 @@ namespace LazySharp.Roslyn {
         public static TypeSyntax WrapType(TypeSyntax type, string wrapperClassName, bool keepTrailingTrivia = true) {
             var trails = type.GetTrailingTrivia();
             var leads = type.GetLeadingTrivia();
-            var clearType = type.ReplaceTrivia(leads.Concat(trails), (_, __) => SyntaxTriviaList.Empty);
+            var clearType = type.ReplaceTrivia(leads.Concat(trails), (_, __) => Syntax.Whitespace(string.Empty));
             var result = Syntax.GenericName(wrapperClassName)
                 .AddTypeArgumentListArguments(clearType)
                 .WithLeadingTrivia(leads);

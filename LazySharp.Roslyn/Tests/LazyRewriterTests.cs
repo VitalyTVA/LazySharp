@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Syntax = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using SyntaxRewriter = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxRewriter;
 #else
 using Roslyn.Compilers;
 using Roslyn.Compilers.CSharp;
@@ -178,7 +179,7 @@ namespace LazySharp.Roslyn.Tests {
                 expected = string.Format(context, expected);
                 original = string.Format(context, original);
             }
-            var tree = SyntaxTree.ParseText(original);
+            var tree = CSharpSyntaxTree.ParseText(original);
             var rewritten = rewriter.Visit(tree.GetRoot());
             Assert.AreEqual(expected, rewritten.GetText().ToString());
         }
